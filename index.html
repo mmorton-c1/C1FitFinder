@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Condition 1 — Find Your Case</title>
+<style>
+/* ============================================================
+   CONDITION 1 PRODUCT FINDER WIDGET
+   Single-file embed for Gorgias Help Center & Messaging Widget
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --c1-red:    #E4001B;
+  --c1-black:  #171919;
+  --c1-white:  #FFFFFF;
+  --c1-gray:   #2a2d2d;
+  --c1-lgray:  #f4f4f4;
+  --c1-border: #e0e0e0;
+  --c1-warn:   #ff9800;
+  --radius:    4px;
+  --font:      Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--c1-black);
+  color: var(--c1-black);
+  margin: 0;
+  padding: 0;
+}
+
+.widget-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--c1-black);
+}
+
+/* HEADER */
+.widget-header {
+  background: var(--c1-black);
+  padding: 20px 24px 16px;
+  border-bottom: 3px solid var(--c1-red);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.widget-header img.logo {
+  height: 32px;
+  object-fit: contain;
+}
+.widget-header .tagline {
+  color: var(--c1-white);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.widget-header .tagline span {
+  color: var(--c1-red);
+}
+
+/* MAIN BODY */
+.widget-body {
+  background: var(--c1-lgray);
+  padding: 24px;
+}
+
+/* ITEM BUILDER */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.item-row {
+  background: var(--c1-white);
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 148px 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.item-row select.type-sel {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c1-black);
+  background: var(--c1-lgray);
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.item-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.autocomplete-wrap {
+  position: relative;
+}
+
+.autocomplete-wrap input {
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--c1-black);
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  width: 100%;
+  background: var(--c1-white);
+}
+.autocomplete-wrap input:focus { outline: 2px solid var(--c1-red); border-color: transparent; }
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--c1-white);
+  border: 1px solid var(--c1-red);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+  display: none;
+}
+.autocomplete-dropdown.open { display: block; }
+.autocomplete-dropdown li {
+  list-style: none;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--c1-lgray);
+}
+.autocomplete-dropdown li:hover, .autocomplete-dropdown li.active { background: var(--c1-lgray); color: var(--c1-red); font-weight: 700; }
+
+.manual-dims {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.manual-dims .dim-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+  white-space: nowrap;
+}
+.manual-dims input[type="number"] {
+  font-family: var(--font);
+  font-size: 13px;
+  width: 60px;
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  padding: 6px 8px;
+  color: var(--c1-black);
+  background: var(--c1-white);
+  -moz-appearance: textfield;
+}
+.manual-dims input[type="number"]::-webkit-outer-spin-button,
+.manual-dims input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+.manual-dims input[type="number"]:focus { outline: 2px solid var(--c1-red); border-color: transparent; }
+.manual-dims .dim-sep { color: #aaa; font-size: 13px; }
+
+/* ADDITION 1 — Firearm dimension display on autocomplete selection */
+.selected-dims {
+  font-size: 11px;
+  color: #777;
+  font-variant-numeric: tabular-nums;
+  margin-top: -2px;
+  display: none; /* hidden until a firearm is selected */
+}
+.selected-dims.visible { display: block; }
+
+.remove-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  color: #aaa;
+  font-size: 18px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  align-self: center;
+}
+.remove-btn:hover { background: #fee; border-color: var(--c1-red); color: var(--c1-red); }
+
+.add-item-btn {
+  background: none;
+  border: 2px dashed #ccc;
+  border-radius: var(--radius);
+  color: #888;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: all 0.15s;
+  margin-bottom: 18px;
+}
+.add-item-btn:hover { border-color: var(--c1-red); color: var(--c1-red); background: #fff5f5; }
+
+.find-btn {
+  background: var(--c1-red);
+  color: var(--c1-white);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.15s;
+}
+.find-btn:hover { background: #c20018; }
+.find-btn:active { background: #a30014; }
+
+/* RESULTS */
+.results-section {
+  margin-top: 24px;
+  display: none;
+}
+.results-section.visible { display: block; }
+
+.results-header {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c1-black);
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--c1-red);
+  margin-bottom: 16px;
+}
+
+.suppression-banner {
+  background: var(--c1-black);
+  color: var(--c1-white);
+  border-left: 4px solid var(--c1-red);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: none;
+}
+.suppression-banner.visible { display: block; }
+
+.results-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 18px 0 10px;
+}
+.results-group-label:first-child { margin-top: 0; }
+
+.case-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.case-card {
+  background: var(--c1-white);
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+.case-card.top-pick { border-color: var(--c1-red); border-width: 2px; }
+
+.card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--c1-red);
+  color: var(--c1-white);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+}
+
+.card-inner { padding: 14px; }
+.card-case-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--c1-red);
+  margin-bottom: 3px;
+}
+.card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c1-black);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.card-dims {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.card-dims strong { color: var(--c1-black); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 2px;
+  background: var(--c1-lgray);
+  color: #555;
+  border: 1px solid var(--c1-border);
+}
+.tag.tag-precut { background: #fff5f5; color: var(--c1-red); border-color: #ffc4c4; }
+.tag.tag-pluck { background: #f0f7ff; color: #1565c0; border-color: #b3d4f7; }
+.tag.tag-wheel { background: #f3f9f0; color: #2e7d32; border-color: #b8ddb4; }
+.tag.tag-lidorg { background: #fffbf0; color: #e65100; border-color: #ffd999; }
+
+.card-warn {
+  font-size: 11px;
+  /* PART 6: three-tier snug fit warning — amber/yellow, NOT red (red reserved for CTAs) */
+  color: #7a5c00;
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding: 5px 8px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 2px;
+}
+
+/* PART 2/RESULT CARDS: storage configuration label for long cases */
+.card-config {
+  font-size: 11px;
+  color: #555;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.pluck-label {
+  font-size: 11px;
+  color: #1565c0;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.shop-btn {
+  display: block;
+  background: var(--c1-red);
+  color: var(--c1-white);
+  text-decoration: none;
+  text-align: center;
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 9px;
+  border-radius: var(--radius);
+  transition: background 0.15s;
+}
+.shop-btn:hover { background: #c20018; }
+
+/* BAGS */
+.bags-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 2px solid var(--c1-border);
+}
+.bags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.bag-pill {
+  background: var(--c1-white);
+  border: 1px solid var(--c1-border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c1-black);
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.bag-pill:hover { border-color: var(--c1-red); color: var(--c1-red); background: #fff5f5; }
+
+/* ACCESSORIES */
+.accessories-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 2px solid var(--c1-border);
+}
+.acc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.acc-pill {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 11px;
+  border-radius: 2px;
+  background: var(--c1-lgray);
+  color: #555;
+  border: 1px solid var(--c1-border);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.acc-pill:hover { border-color: var(--c1-black); color: var(--c1-black); }
+
+/* NO FIT */
+.no-fit-msg {
+  background: var(--c1-white);
+  border: 2px dashed var(--c1-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* FOOTER */
+.widget-footer {
+  background: var(--c1-gray);
+  padding: 16px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+.footer-item {
+  font-size: 11px;
+  color: #bbb;
+  line-height: 1.5;
+}
+.footer-item strong { color: var(--c1-white); display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+.footer-item a { color: #bbb; text-decoration: underline; }
+.footer-item a:hover { color: var(--c1-white); }
+
+/* RESPONSIVE */
+@media (max-width: 560px) {
+  .item-row { grid-template-columns: 1fr auto; }
+  .item-row .type-sel { grid-column: 1 / -1; }
+  .widget-body { padding: 16px; }
+  .widget-header { padding: 14px 16px; }
+  .case-cards { grid-template-columns: 1fr; }
+  .widget-footer { grid-template-columns: 1fr 1fr; padding: 14px 16px; }
+}
+</style>
+</head>
+<body>
+<div class="widget-wrap">
+
+  <!-- HEADER -->
+  <div class="widget-header">
+    <img class="logo" src="https://condition1.com/cdn/shop/files/LOGO-BRAND-white_420x.png" alt="Condition 1" onerror="this.style.display='none'">
+    <div class="tagline">Find My Case<span> — Built for Your Kit</span></div>
+  </div>
+
+  <!-- BODY -->
+  <div class="widget-body">
+    <div class="section-label">What are you packing?</div>
+
+    <div class="item-list" id="itemList"></div>
+
+    <button class="add-item-btn" id="addItemBtn">+ Add another item</button>
+
+    <button class="find-btn" id="findBtn">Find My Case</button>
+
+    <!-- RESULTS -->
+    <div class="results-section" id="resultsSection">
+      <div class="results-header">Cases that'll fit your kit</div>
+      <div class="suppression-banner" id="suppressionBanner"></div>
+      <div id="resultsInner"></div>
+      <div class="bags-section" id="bagsSection"></div>
+      <div class="accessories-section" id="accessoriesSection"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="widget-footer">
+    <div class="footer-item"><strong>Free Shipping</strong>Orders $300+ (contiguous 48 states)</div>
+    <div class="footer-item"><strong>Returns</strong><a href="https://condition1.com/apps/aftership-returns-center" target="_blank">Returns Portal</a></div>
+    <div class="footer-item"><strong>Support</strong><a href="mailto:support@condition1.com">support@condition1.com</a><br>Mon–Fri 8AM–5PM CST</div>
+    <div class="footer-item"><strong>Military / First Responder</strong>15% off via GovX ID</div>
+  </div>
+
+</div>
+
+<script>
+/* ================================================================
+   SECTION 1: CASE CATALOG JSON
+   All dimensions verified from condition1.com product pages.
+   
+   CHANGELOG (post-scrub corrections vs. master prompt seed data):
+   - #997: Interior corrected to 16.94" x 11.32" x 10.56"
+     (seed had 17.49" x 11.87" x 10.56" — wrong, that is #801 dims)
+     Source: condition1.com/products/18-medium-watertight-case-997
+   - #997 pre-cut slot: 5.50"L x 1.25"W x 9.00"D (7 pistols standing vertical)
+     Source: condition1.com/products/18-medium-storage-case-997-with-7-slot-14-mag-pre-cut-foam
+   - #184 pre-cut: pistol form 8.5"L x 1.25"W x 4.13"D (uses plugs for 5"/6.5"/8.5" barrel)
+     Source: condition1.com/products/11-small-storage-case-184-1-slot-2-mag-precut-foam
+   - #2106: Interior corrected to 51.47" x 13.77" x 7.07"
+     (seed had 51.46" x 13.83" x 7.13" — minor rounding, live site is authority)
+     Source: condition1.com/collections/rifle-cases
+   - #818: Interior confirmed as 51.47" x 13.77" x 5.02" (pluckable only in seed; 
+     also exists as pre-cut 3-gun version with long-gun slot 48.21"L)
+     Source: condition1.com/products/55-3-gun-case-818
+   - #227: NOW HAS PRE-CUT FOAM — 6-slot semi-auto variant confirmed live
+     Slot dims: 9.55"L x 1.25"W (barrel) x 1.63"W (grip) x 5.25"D (matching #179 pattern)
+     Source: condition1.com/products/20-6-pistol-case-227
+   - #300: Pre-cut 4-slot slot dims: 10.25"L x 1.25"W x 4.00"D
+     7-slot insert also available: 8.5"L x 1.25"W x 4.25"D
+     Source: condition1.com/products/22-4-pistol-case-300, condition1.com/products/7-slot-custom-cut-foam-for-300-hard-case
+   - NEW CASE #075: 14" 2 Micro Gun Case confirmed with pre-cut foam
+     INT: 12.27" x 9.27" x 5.23" — Source: condition1.com/collections/pre-cut-foam-cases
+   - NEW CASE #305: 24" 6 Pistol Case — INT: 21.65" x 14.17" x 8.03"
+     Source: condition1.com/collections/pre-cut-foam-cases
+   - NEW CASE #162: 17" 2 Pistol Case — INT: 15.75" x 10.75" x 3.95"
+     Source: condition1.com/collections/waterproof-cases-w-pre-cut-foam-dealer
+   - NEW CASE #1258: 31" 18 Pistol Case — INT: 28.4" x 17.32" x 10.61"
+     Source: condition1.com/collections/pre-cut-foam-cases
+   - NEW CASE #288: 22" Range Bag Case — INT: 20.29" x 12.44" x 6.91"
+     Source: condition1.com/collections/large-cases
+   - NEW CASE #312: 10" Small Case — INT: 8.49" x 5.94" x 3.79" (pluckable only)
+     Source: condition1.com/collections/all-hard-cases
+   - #179 pre-cut slot: confirmed 9.55"L x 1.25"W(barrel) x 1.63"W(grip) x 5.25"D
+     (seed had 9.55"L x 1.25"W x 1.63"W x 5.25"D — confirmed correct)
+   - Customer review calibration note: #818 pre-cut reviewer noted Beretta 1301 Comp
+     with rail has tight fit; standard shotguns fit fine. Pluckable recommended for
+     non-standard setups. Flagged in slot matching as "verify barrel attachment height."
+   
+   FULL SITE CRAWL CHANGELOG — PART 3 (this pass):
+   - NEW CASE #2332: 40" SBR Case — INT: 36.52" x 14.52" x 6.2"
+     Pre-cut SBR slot: total cutout length 32"; side-oriented storage
+     Source: condition1.com/products/40-sbr-case-2332
+   - NEW CASE #2348: 40" Long Trunk — INT: 36.72" x 14.72" x 12.37" (pluckable only)
+     Source: condition1.com/collections/new-arrivals
+   - NEW CASE #2312: 55" Long Trunk — INT: 51.32" x 13.82" x 11.88" (pluckable only)
+     Source: condition1.com/collections/storage-cases
+   - NEW CASE #2300: 42" Economy AR Case — INT: 41.40" x 14.00" x 4.26"
+     Pre-cut option available; economy (not IP67)
+     Source: condition1.com/collections/pre-cut-foam-cases
+   - #2191: CORRECTED — also has 14 Pistol pre-cut variant (5.50"Lx1.25"Wx9"D slots)
+     and 4 Rifle pre-cut (max OAL 40"); both variants confirmed on live site
+     Source: condition1.com/collections/2191-cases
+   - #229 & #1229: SAME INTERIOR DIMENSIONS confirmed (42.00"x13.50"x5.14")
+     #229 is pluckable-only; #1229 is the pre-cut AR/rifle variant — they use same body
+   - storageConfig fields added to all long gun / shotgun cases (see below)
+   - Customer review calibration: #2191 reviewer noted foam pre-cut for standard stocks;
+     B5 Systems wide stocks don't fit without trimming — flagged in slot note.
+     Source: customer review — #2191 product page
+   - Customer review calibration: #1229 reviewer confirmed 18"/16" barrel fits AR-10 pre-cut;
+     20" barrel required manual foam modification — flagged in slot note.
+     Source: customer review — #1229 product page
+   ================================================================ */
+const CASES = [
+  {
+    id:"312", name:"10\" Small Case #312", interior:[8.49,5.94,3.79],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"10-small-case-312", precutSlots:[],
+    storageConfig:null
+  },
+  {
+    id:"667", name:"8\" Micro Case #667", interior:[6.55,3.90,1.80],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:false,
+    handle:"8-micro-waterproof-hard-case-667", precutSlots:[],
+    storageConfig:null
+  },
+  {
+    id:"184", name:"11\" Single Pistol Case #184", interior:[9.29,7.23,4.13],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"11-small-storage-case-184-1-slot-2-mag-precut-foam",
+    // Pre-cut: 1 pistol slot with barrel plugs (5"/6.5"/8.5" lengths); no optics
+    // Source: condition1.com/products/11-small-storage-case-184-1-slot-2-mag-precut-foam
+    precutSlots:[{ L:8.5, W:1.25, D:4.13, count:1, note:"No optics. Barrel plugs for 5/6.5/8.5in barrels." }],
+    storageConfig:null
+  },
+  {
+    id:"075", name:"14\" 2 Micro Gun Case #075", interior:[12.27,9.27,5.23],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"condition-1-case-075",
+    // Pre-cut: 2 compact pistol slots (sub-compact / micro size)
+    // Source: condition1.com/collections/pre-cut-foam-cases listing
+    precutSlots:[{ L:8.5, W:1.25, D:5.23, count:2, note:"Best for sub-compact / micro pistols." }],
+    storageConfig:null
+  },
+  {
+    id:"185", name:"11\" Deep Case #185", interior:[9.29,7.23,6.13],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"11-small-storage-case-185", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"232", name:"13\" Small Case #232", interior:[11.85,7.03,4.44],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"nintendo-switch-gaming-waterproof-portability-carrying-accessories", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"162", name:"17\" 2 Pistol Case #162", interior:[15.75,10.75,3.95],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"condition-1-carrying-cases",
+    // Source: condition1.com/collections/waterproof-cases-w-pre-cut-foam-dealer
+    precutSlots:[{ L:9.55, W:1.63, D:3.95, count:2, note:"2 pistol slots + mags." }],
+    storageConfig:null
+  },
+  {
+    id:"179", name:"16\" Pistol Case #179", interior:[14.61,10.46,6.01],
+    wheels:false, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"16-medium-storage-case-179-with-2-slot-8-mag-pre-cut-foam",
+    // Variants: 2-slot, 3-slot, 4-slot. Using widest slot W for match (grip side 1.63").
+    // Source: condition1.com/products/16-medium-storage-case-179-with-2-slot-8-mag-pre-cut-foam
+    precutSlots:[
+      { L:9.55, W:1.63, D:5.25, count:4, note:"2/3/4 slot variants available. No extended mags. Optics/WML/magwell OK." }
+    ], storageConfig:null
+  },
+  {
+    id:"310", name:"16\" 3 Revolver Case #310", interior:[14.61,10.56,8.51],
+    wheels:false, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"16-3-revolver-case-310",
+    // Source: condition1.com/products/16-3-revolver-case-310
+    precutSlots:[{ L:12.55, W:1.90, D:6.00, count:3, note:"Dedicated revolver slots. Accessory pockets 5\"x1.51\"x6\"." }],
+    storageConfig:null
+  },
+  {
+    id:"2162", name:"17\" Medium Case #2162", interior:[15.75,10.75,3.95],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"17-medium-carrying-case-2162", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"801", name:"18\" 5 Pistol Case #801", interior:[17.49,11.87,6.25],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"18-medium-storage-case-801-with-5-slot-20-mag-pre-cut-foam",
+    // Source: condition1.com/products/18-medium-storage-case-801-with-5-slot-20-mag-pre-cut-foam
+    precutSlots:[{ L:9.75, W:1.25, D:4.00, count:5, note:"3/5 slot variants + 50 mag variant. Optics/WML/magwell OK. No extended mags." }],
+    storageConfig:null
+  },
+  {
+    id:"997", name:"18\" Deep Case #997", interior:[16.94,11.32,10.56],
+    wheels:false, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"18-medium-storage-case-997-with-7-slot-14-mag-pre-cut-foam",
+    // CORRECTED: interior was wrong in seed (had 17.49x11.87 which is #801)
+    // Pre-cut slots are 5.50"L x 1.25"W x 9"D (pistols stored VERTICALLY, barrel down)
+    // Source: condition1.com/products/18-medium-storage-case-997-with-7-slot-14-mag-pre-cut-foam
+    precutSlots:[{ L:5.50, W:1.25, D:9.00, count:7, note:"Pistols stored vertically. 7 slots, 14 mags. No extended mags. Optics/WML OK." }],
+    storageConfig:null
+  },
+  {
+    id:"227", name:"20\" 6 Pistol Case #227", interior:[18.47,13.31,6.75],
+    wheels:false, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"20-6-pistol-case-227",
+    // Source: condition1.com/products/20-6-pistol-case-227
+    precutSlots:[{ L:9.55, W:1.63, D:5.25, count:6, note:"6 slot variant. No extended mags. Optics/WML/magwell OK." }],
+    storageConfig:null
+  },
+  {
+    id:"288", name:"22\" Large Case #288", interior:[20.29,12.44,6.91],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"22-large-case-288",
+    // Source: condition1.com/collections/large-cases (also 3-pistol + range bag variant)
+    precutSlots:[{ L:9.55, W:1.63, D:5.25, count:3, note:"3 pistol + range bag layout." }],
+    storageConfig:null
+  },
+  {
+    id:"300", name:"22\" Rolling Case #300", interior:[19.66,11.18,7.50],
+    wheels:true, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"22-in-hard-case-with-wheels",
+    cameraBadge:true,
+    // Source: condition1.com/products/22-4-pistol-case-300
+    // 4-slot insert: 10.25"L x 1.25"W x 4"D; 7-slot insert: 8.5"L x 1.25"W x 4.25"D
+    precutSlots:[{ L:10.25, W:1.25, D:4.00, count:7, note:"4-slot or 7-slot insert available. 10.25\" or 8.5\" slots. Optics/WML/magwell OK." }],
+    storageConfig:null
+  },
+  {
+    id:"305", name:"24\" 6 Pistol Case #305", interior:[21.65,14.17,8.03],
+    wheels:true, lidOrg:true, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"24-6-pistol-case-305",
+    // Source: condition1.com/collections/pre-cut-foam-cases
+    precutSlots:[{ L:10.25, W:1.25, D:4.00, count:6, note:"6 pistol slots." }],
+    storageConfig:null
+  },
+  {
+    id:"839", name:"22\" Large Case #839", interior:[21.91,16.96,7.43],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"large-carrying-case", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"289", name:"25\" Large Case #289", interior:[21.97,17.03,8.87],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"25-large-storage-case-289", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"024", name:"25\" Large Case #024", interior:[22.12,17.12,12.70],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"024", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"286", name:"25\" Large Case #286", interior:[21.60,16.60,12.79],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"condition-1-hard-cases-101286", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"287", name:"25\" Rolling Case #287", interior:[21.92,16.96,9.13],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"25inch-287-rolling-hard-travel-case-trunk-camera", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"991", name:"25\" Rolling Case #991", interior:[21.98,17.02,10.56],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"25-large-storage-case-991", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"253", name:"20\" Large Case #253", interior:[18.94,14.51,7.50],
+    wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"condition-1-watertight-cases-253", precutSlots:[], storageConfig:null
+  },
+  {
+    id:"1258", name:"31\" 18 Pistol Case #1258", interior:[28.40,17.32,10.61],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"31-footlocker-waterproof-case-258",
+    // Source: condition1.com/collections/pre-cut-foam-cases
+    precutSlots:[{ L:9.55, W:1.63, D:5.25, count:18, note:"18 pistol slots." }],
+    storageConfig:null
+  },
+  {
+    id:"2152", name:"33\" Large Case #2152", interior:[30.00,22.00,18.00],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"33-rolling-hard-case-2152", precutSlots:[], storageConfig:null
+  },
+  // PART 5: #2332 — 40" SBR Case
+  // INT: 36.52" x 14.52" x 6.2" — Source: condition1.com/products/40-sbr-case-2332
+  // Pre-cut SBR slot max OAL: 32"; side-oriented storage
+  // PART 2 storageConfig: 1 SBR on its side
+  {
+    id:"2332", name:"40\" SBR Case #2332", interior:[36.52,14.52,6.20],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"40-sbr-case-2332",
+    // PART 4: orientation:"side" applied to long-gun/SBR pre-cut slots
+    // SBR cutout 32"L; side-oriented: OAL→slotL, firearm height→slotW, receiver width→slotD
+    precutSlots:[{ L:32.00, W:14.52, D:6.20, count:1, orientation:"side",
+      note:"SBR max OAL 32\". Side-oriented storage. Optics/WML accommodated." }],
+    storageConfig:{ orientation:"side", capacity:1, type:"sbr",
+      configLabel:"1 SBR on its side" }
+  },
+  // NEW: #2348 — 40" Long Trunk (pluckable only, deep)
+  // INT: 36.72" x 14.72" x 12.37" — Source: condition1.com/collections/new-arrivals
+  {
+    id:"2348", name:"40\" Long Trunk #2348", interior:[36.72,14.72,12.37],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"40-long-trunk-2348", precutSlots:[],
+    storageConfig:{ orientation:"side", capacity:4, type:"rifle",
+      configLabel:"Stored on its side — 36.72\" × 14.72\" × 12.37\"" }
+  },
+  // ADDITION 3: #1229 — Dedicated AR-10 / AR-15 / Long Gun 45" case with pre-cut foam
+  // INT: 42.00" x 13.50" x 5.14" — Source: condition1.com/collections/pre-cut-foam-cases
+  // AR-10 pre-cut max OAL: 38.72" | AR-15 pre-cut max OAL: 34.8"
+  // Slot: single long-gun channel; also includes pistol slot and accessories
+  // Customer review calibration: 20" barrel AR-10 requires manual foam mod — flagged.
+  {
+    id:"1229", name:"45\" Long Case #1229", interior:[42.00,13.50,5.14],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"45-1229-pre-cut-foam-ar10-pistol",
+    // PART 4: orientation:"side" for long-gun pre-cut slot
+    // AR-10 primary slot: OAL→slotL (38.72"), firearm height (w/optics)→slotW, receiver width→slotD
+    precutSlots:[{ L:38.72, W:13.50, D:5.14, count:1, orientation:"side",
+      note:"AR-10 max OAL 38.72\". AR-15 max OAL 34.8\". 20\" barrel AR-10 requires foam mod (customer review). Includes pistol slot." }],
+    storageConfig:{ orientation:"side", capacity:1, type:"rifle",
+      configLabel:"1 rifle on its side" }
+  },
+  // PART 2: #229 — 44" Long Case, pluckable only, 1 rifle on its side
+  // INT: 42.00" x 13.50" x 5.14" — same body as #1229 but no pre-cut variant
+  {
+    id:"229", name:"44\" Long Case #229", interior:[42.00,13.50,5.14],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"44-waterproof-long-case-229", precutSlots:[],
+    // PART 2: storageConfig — single rifle on its side; do not surface for multi-rifle selections
+    storageConfig:{ orientation:"side", capacity:1, type:"rifle",
+      configLabel:"1 rifle on its side" }
+  },
+  // PART 2: #2191 — 45" 4 Rifle Trunk
+  // INT: 42.02" x 13.54" x 12.02" — Source: condition1.com/products/45-long-trunk-4-slot-2191
+  // Pre-cut: 4 rifles side by side (max OAL 40"); also has 14-pistol variant
+  // PART 2: only surface as top result for 3–4 rifle selections; never default single result
+  {
+    id:"2191", name:"45\" 4 Rifle Trunk #2191", interior:[42.02,13.54,12.02],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"45-long-storage-trunk-2191",
+    // PART 4: orientation:"side" for 4-rifle pre-cut
+    // Slot dims side-oriented: OAL→slotL (40"), combined height of 4 rifles + buffers→depth (12.02")
+    // Customer review calibration: B5 Systems wide stocks don't fit without trimming.
+    precutSlots:[{ L:40.00, W:13.54, D:12.02, count:4, orientation:"side",
+      note:"4 rifles side by side. Max OAL 40\". Wide aftermarket stocks may require foam trimming (customer review). Not recommended for offset WML." }],
+    // PART 2: storageConfig — 4 rifles side by side; only surface for 3+ rifle selections
+    storageConfig:{ orientation:"side", capacity:4, type:"rifle",
+      multiRifleOnly:true,
+      configLabel:"4 rifles side by side" }
+  },
+  // PART 2: #818 — 55" 3-Gun Case, pre-cut for AR-15/shotgun/pistol combos
+  // INT: 51.47" x 13.77" x 5.02" — Source: condition1.com/products/55-3-gun-case-818
+  {
+    id:"818", name:"55\" 3-Gun Case #818", interior:[51.47,13.77,5.02],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"55-long-storage-case-818-with-3-gun-ar-15-shotgun-pistol-pre-cut-foam",
+    // PART 4: orientation:"side"; rifle max OAL 41.7", shotgun max 49"
+    precutSlots:[{ L:48.21, W:13.77, D:5.02, count:2, orientation:"side",
+      note:"AR-15/10 max OAL 41.7\". Shotgun max 49\". Includes pistol slot. Non-standard barrel attachments may require pluckable." }],
+    // PART 2: 3 configurations marketed on product page
+    storageConfig:{ orientation:"side", capacity:3,
+      configurations:["1 shotgun","hunting rifle + pistol","AR-15 + shotgun + pistol"],
+      configLabel:"Multi-gun: 1 shotgun | Hunting Rifle + Pistol | AR-15 + Shotgun + Pistol" }
+  },
+  // PART 2: #2106 — 55" 3 Shotgun Case, pre-cut for 3 shotguns side by side
+  // INT: 51.47" x 13.77" x 7.07" — Source: condition1.com/products/55-3-shotgun-case-2106
+  {
+    id:"2106", name:"55\" 3 Shotgun Case #2106", interior:[51.47,13.77,7.07],
+    wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
+    handle:"55-rolling-waterproof-long-case-106",
+    // PART 4: orientation:"side"; shotgun slots 49.81"Lx1.85"Wx4.50"D side-oriented
+    precutSlots:[{ L:49.81, W:1.85, D:4.50, count:3, orientation:"side",
+      note:"3 shotgun slots side by side. Accessory pockets included." }],
+    // PART 2: storageConfig — 3 shotguns side by side
+    storageConfig:{ orientation:"side", capacity:3, type:"shotgun", precutAvailable:true,
+      configLabel:"3 shotguns side by side — pre-cut foam" }
+  },
+  // NEW: #2312 — 55" Long Trunk (pluckable only, deep)
+  // INT: 51.32" x 13.82" x 11.88" — Source: condition1.com/collections/storage-cases
+  {
+    id:"2312", name:"55\" Long Trunk #2312", interior:[51.32,13.82,11.88],
+    wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
+    handle:"55-long-trunk-2312", precutSlots:[],
+    storageConfig:{ orientation:"side", capacity:4, type:"rifle",
+      configLabel:"Stored on its side — 51.32\" × 13.82\" × 11.88\"" }
+  },
+  // NEW: #2300 — 42" Economy AR Case (not IP67 rated; flagged as economy)
+  // INT: 41.40" x 14.00" x 4.26" — Source: condition1.com/collections/pre-cut-foam-cases
+  {
+    id:"2300", name:"42\" Economy AR Case #2300", interior:[41.40,14.00,4.26],
+    wheels:false, lidOrg:false, precutFoamAvailable:true, pluckableFoam:false,
+    handle:"42-economy-case-2300",
+    isEconomy:true, // not IP67; flagged
+    precutSlots:[{ L:39.00, W:14.00, D:4.26, count:1, orientation:"side",
+      note:"Economy case — not IP67 rated. Pre-cut for AR platform; standard convoluted foam." }],
+    storageConfig:{ orientation:"side", capacity:1, type:"rifle",
+      configLabel:"1 rifle on its side — economy case" }
+  }
+];
+
+/* ================================================================
+   SECTION 2: FIREARM DATABASE
+   All OAL from manufacturer spec sheets where possible.
+   Width = slide width (semi-auto) or cylinder width (revolver).
+   Long guns = stock-extended OAL.
+   ================================================================ */
+const FIREARMS = [
+  // SEMI-AUTO HANDGUNS
+  // Source: Glock spec sheets glock.com; verified slide width ~1.18–1.26"
+  { id:"g17",    label:"Glock 17",              type:"semi", L:7.95, W:1.18, H:5.47 },
+  { id:"g19",    label:"Glock 19",              type:"semi", L:7.28, W:1.18, H:5.04 },
+  { id:"g43x",   label:"Glock 43X",             type:"semi", L:6.50, W:1.10, H:5.04 },
+  { id:"g26",    label:"Glock 26",              type:"semi", L:6.50, W:1.18, H:4.17 },
+  { id:"g34",    label:"Glock 34",              type:"semi", L:8.82, W:1.18, H:5.47 },
+  // Source: SIG Sauer spec sheets sigsauer.com
+  { id:"p320fs", label:"Sig P320 Full Size",    type:"semi", L:8.00, W:1.30, H:5.50 },
+  { id:"p365",   label:"Sig P365",              type:"semi", L:5.80, W:1.00, H:4.30 },
+  { id:"p365xl", label:"Sig P365XL",            type:"semi", L:6.60, W:1.00, H:4.80 },
+  // Source: S&W spec sheets smith-wesson.com
+  { id:"mp9fs",  label:"S&W M&P 9 Full Size",   type:"semi", L:7.63, W:1.20, H:5.50 },
+  { id:"mp9c",   label:"S&W M&P 9 Compact",     type:"semi", L:6.65, W:1.20, H:4.80 },
+  // Source: Various manufacturer spec sheets (1911 standard Browning/GI pattern)
+  { id:"1911",   label:"1911 Full Size (5\")",   type:"semi", L:8.50, W:1.27, H:5.50 },
+  // Source: Beretta spec sheets beretta.com
+  { id:"92fs",   label:"Beretta 92FS",           type:"semi", L:8.54, W:1.42, H:5.39 },
+  // Source: CZ spec sheets cz-usa.com
+  { id:"cz75",   label:"CZ 75",                  type:"semi", L:8.10, W:1.38, H:5.47 },
+  // Source: Ruger spec sheets ruger.com
+  { id:"lcpii",  label:"Ruger LCP II",           type:"semi", L:5.17, W:0.90, H:3.71 },
+  { id:"sr9",    label:"Ruger SR9",              type:"semi", L:7.55, W:1.27, H:5.52 },
+  // Source: Springfield spec sheets springfield-armory.com
+  { id:"hellcat",label:"Springfield Hellcat",   type:"semi", L:6.00, W:1.00, H:4.00 },
+  // Source: HK spec sheets heckler-koch.us
+  { id:"vp9",    label:"HK VP9",                 type:"semi", L:7.34, W:1.32, H:5.41 },
+  { id:"usp9",   label:"HK USP 9",               type:"semi", L:7.64, W:1.34, H:5.51 },
+  // Source: FN spec sheets fnamerica.com
+  { id:"fn509",  label:"FN 509",                 type:"semi", L:7.40, W:1.30, H:5.40 },
+  // Source: Canik spec sheets canik-usa.com
+  { id:"mete",   label:"Canik Mete SFT",         type:"semi", L:7.60, W:1.42, H:5.63 },
+  // Source: Walther spec sheets waltherarms.com
+  { id:"ppq",    label:"Walther PPQ M2",          type:"semi", L:7.10, W:1.30, H:5.30 },
+  { id:"pdp",    label:"Walther PDP Full Size",   type:"semi", L:7.78, W:1.34, H:5.51 },
+  // Source: Springfield, Taurus spec sheets
+  { id:"xd9",    label:"Springfield XD 9mm",     type:"semi", L:7.30, W:1.22, H:6.00 },
+  { id:"g2c",    label:"Taurus G2C",             type:"semi", L:6.24, W:1.22, H:5.08 },
+  { id:"th9",    label:"Taurus TH9",             type:"semi", L:7.52, W:1.22, H:5.51 },
+  // Desert Eagle — known for large frame
+  { id:"deagle", label:"Desert Eagle (.44/.50)",  type:"semi", L:10.75, W:1.50, H:6.25 },
+
+  // REVOLVERS (W = cylinder width — critical for slot matching)
+  // Source: verified cylinder widths from manufacturer specs
+  // S&W spec sheets: smith-wesson.com
+  { id:"686_4",  label:"S&W 686 (4\" barrel)",   type:"revolver", L:9.60,  W:1.72, H:5.50 },
+  { id:"29_6",   label:"S&W Model 29 (6\" barrel)",type:"revolver",L:11.38, W:1.72, H:6.00 },
+  { id:"60_snub",label:"S&W Model 60 Snub Nose", type:"revolver", L:7.50,  W:1.35, H:4.25 },
+  { id:"642",    label:"S&W 642 Airweight",       type:"revolver", L:6.31,  W:1.30, H:4.50 },
+  { id:"627",    label:"S&W 627 (4\")",           type:"revolver", L:9.60,  W:1.72, H:5.50 },
+  // Ruger spec sheets: ruger.com
+  { id:"gp100",  label:"Ruger GP100 (4\")",       type:"revolver", L:9.50,  W:1.70, H:5.47 },
+  { id:"bh357",  label:"Ruger Blackhawk (.357 4.6\")",type:"revolver",L:10.50,W:1.65,H:5.50},
+  { id:"lcrx",   label:"Ruger LCRx",             type:"revolver", L:6.50,  W:1.28, H:4.50 },
+  // Colt spec sheets (approx from published measurements)
+  { id:"python", label:"Colt Python (4.25\")",    type:"revolver", L:9.65,  W:1.57, H:5.47 },
+  // Taurus spec sheets: taurususa.com
+  { id:"judge",  label:"Taurus Judge (3\" chamber)",type:"revolver",L:9.50, W:1.80, H:5.25 },
+  { id:"66_4",   label:"Taurus 66 (4\")",         type:"revolver", L:9.50,  W:1.65, H:5.50 },
+  // Charter Arms
+  { id:"bulldog",label:"Charter Arms Bulldog",   type:"revolver", L:7.50,  W:1.52, H:4.50 },
+  // Kimber spec sheets
+  { id:"k6s",    label:"Kimber K6s (3\")",        type:"revolver", L:7.50,  W:1.39, H:4.80 },
+
+  // LONG GUNS (OAL = stock extended)
+  // Source: manufacturer spec sheets / ATF SBR compliance specs
+  { id:"ar15_16c", label:"AR-15 (16\" barrel, collapsed stock)", type:"longgun", L:32.00, W:2.50, H:8.00 },
+  { id:"ar15_16x", label:"AR-15 (16\" barrel, extended stock)",  type:"longgun", L:35.00, W:2.50, H:8.00 },
+  { id:"ar15_18x", label:"AR-15 (18\" barrel, extended)",        type:"longgun", L:37.00, W:2.50, H:8.00 },
+  { id:"ak47",     label:"AK-47",                                type:"longgun", L:34.25, W:2.50, H:9.00 },
+  // Source: Remington spec sheets
+  { id:"rem700",   label:"Remington 700 (24\" barrel)",          type:"longgun", L:43.60, W:2.25, H:7.00 },
+  { id:"rem700_22",label:"Remington 700 (22\" barrel)",          type:"longgun", L:41.60, W:2.25, H:7.00 },
+  // Source: Mossberg spec sheets mossberg.com
+  // ADDITION 2: Mossberg 500 re-tagged from longgun → shotgun (it is a shotgun)
+  { id:"moss500",  label:"Mossberg 500 (18.5\")",                type:"shotgun", L:38.50, W:2.50, H:7.00 },
+  // ADDITION 2: Mossberg 590 (20" barrel) — Source: mossberg.com spec sheet
+  { id:"moss590_20",label:"Mossberg 590 (20\" barrel)",          type:"shotgun", L:41.00, W:2.75, H:7.50 },
+  { id:"moss590",  label:"Mossberg 590 (18.5\")",                type:"shotgun", L:40.00, W:2.75, H:7.50 },
+  // Source: Ruger spec sheets
+  { id:"1022",     label:"Ruger 10/22 (18.5\")",                  type:"longgun", L:37.25, W:2.00, H:6.50 },
+  // Source: Springfield Armory spec sheets
+  { id:"m1a",      label:"M1A / M14 (Standard)",                 type:"longgun", L:44.33, W:2.75, H:9.00 },
+  // Source: Benelli spec sheets benelliusa.com
+  // ADDITION 2: Benelli M4 re-tagged from longgun → shotgun (it is a shotgun)
+  { id:"benm4",    label:"Benelli M4 (18.5\")",                  type:"shotgun", L:40.00, W:2.50, H:8.50 },
+  // ADDITION 2: Benelli 1301 Tactical re-tagged to shotgun
+  { id:"ben1301",  label:"Benelli 1301 Tactical",                type:"shotgun", L:38.50, W:2.50, H:8.00 },
+  // ADDITION 2: Benelli M2 (26" barrel) — Source: benelliusa.com spec sheet; OAL ~47.6"
+  { id:"benm2_26", label:"Benelli M2 (26\" barrel)",             type:"shotgun", L:47.60, W:2.25, H:7.50 },
+  // ADDITION 2: Remington 870 — Source: remingtonarms.com spec sheets
+  { id:"rem870_18",label:"Remington 870 (18.5\" barrel)",        type:"shotgun", L:38.50, W:2.50, H:7.00 },
+  { id:"rem870_26",label:"Remington 870 (26\" barrel)",          type:"shotgun", L:46.00, W:2.50, H:7.25 },
+  // ADDITION 2: Winchester SXP — Source: winchesterguns.com spec sheet; 18" Defender OAL ~38"
+  { id:"sxp_18",   label:"Winchester SXP (18\" barrel)",         type:"shotgun", L:38.00, W:2.50, H:6.75 },
+  // ADDITION 2: Beretta A300 Outlander — Source: beretta.com spec sheet; 28" OAL ~49.0"
+  { id:"berettaa300",label:"Beretta A300 Outlander (28\")",       type:"shotgun", L:49.00, W:2.25, H:7.50 },
+  // ADDITION 2: Browning Maxus II (26" barrel) — Source: browning.com spec sheet; OAL ~47.25"
+  { id:"maxus2_26",label:"Browning Maxus II (26\" barrel)",       type:"shotgun", L:47.25, W:2.25, H:7.50 },
+  // Source: Savage spec sheets savagearms.com
+  { id:"sav110",   label:"Savage 110 (22\" barrel)",             type:"longgun", L:43.25, W:2.25, H:7.50 },
+  // Source: Winchester spec sheets winchesterguns.com
+  { id:"win70",    label:"Winchester Model 70 (22\")",           type:"longgun", L:42.50, W:2.25, H:7.50 },
+  // Source: Henry spec sheets
+  { id:"big_boy",  label:"Henry Big Boy (20\")",                 type:"longgun", L:38.50, W:2.25, H:6.50 },
+  { id:"henry30",  label:"Henry .30-30 (20\")",                  type:"longgun", L:38.50, W:2.25, H:6.50 },
+
+  // ADDITION 3: AR-10 variants — stock-extended OAL is default matching dimension
+  // Dedicated Condition 1 case: #1229 (INT: 42.00" x 13.50" x 5.14") — verified live site
+  // Source: aero-precision.com, dpmsarms.com, ar10.com spec sheets and published OAL specs
+  // AR-10 18" barrel collapsed: ~32–33" (similar to AR-15 16" collapsed); extended: ~37–38"
+  { id:"ar10_18c", label:"AR-10 (18\" barrel, stock collapsed)",  type:"longgun", L:33.00, W:2.50, H:8.50 },
+  { id:"ar10_18x", label:"AR-10 (18\" barrel, stock extended)",   type:"longgun", L:37.50, W:2.50, H:8.50 },
+  // AR-10 20" barrel extended: ~39.5" OAL — fits #1229 (max 38.72" per Condition 1 pre-cut spec)
+  // NOTE: 20" AR-10 may exceed #1229 pre-cut slot max of 38.72" — customer review on product page confirms;
+  // pluckable foam in #1229 still fits (interior 42.00" L with 0.5" clearance allows up to 41.5")
+  { id:"ar10_20x", label:"AR-10 (20\" barrel, stock extended)",   type:"longgun", L:39.50, W:2.50, H:8.50 },
+  // DPMS GII 16" collapsed ~31.5" — Source: dpmsarms.com
+  { id:"dpms_gii_16c",label:"DPMS GII (16\" barrel, collapsed)", type:"longgun", L:31.50, W:2.50, H:8.50 },
+  // Aero Precision M5 18" extended ~38" — Source: aero-precision.com
+  { id:"ap_m5_18x",label:"Aero Precision M5 (18\" barrel, extended)",type:"longgun",L:38.00,W:2.50,H:8.50},
+
+  // PART 5: SBR DATABASE — Short-Barreled Rifles
+  // Dedicated Condition 1 case: #2332 (INT: 36.52" x 14.52" x 6.2"); pre-cut max OAL 32"
+  // Source: condition1.com/products/40-sbr-case-2332
+  // OAL = stock-extended, stock-collapsed for SBRs; using collapsed as the storage dim
+  // since SBRs are typically stored with stock collapsed
+  { id:"sbr_ar15_10c", label:"SBR AR-15 (10\" barrel, collapsed)",  type:"sbr", L:26.00, W:2.50, H:8.00 },
+  { id:"sbr_ar15_7c",  label:"SBR AR-15 (7\" barrel, collapsed)",   type:"sbr", L:23.00, W:2.50, H:8.00 },
+  { id:"sbr_ak47c",   label:"SBR AK-47 (Short)",                    type:"sbr", L:28.00, W:2.50, H:9.00 },
+  { id:"sbr_mpx",     label:"SIG MPX Carbine (SBR config)",         type:"sbr", L:26.50, W:2.25, H:8.00 },
+  { id:"sbr_mp5",     label:"HK MP5 (SBR config)",                  type:"sbr", L:26.75, W:2.25, H:7.50 },
+  { id:"sbr_scorpion",label:"CZ Scorpion EVO SBR",                  type:"sbr", L:26.00, W:2.00, H:7.50 }
+];
+
+/* ================================================================
+   SECTION 3: GEAR DATABASE
+   Non-firearm items — dimensions from manufacturer spec sheets.
+   ================================================================ */
+const GEAR = [
+  // CAMERAS / DRONES — source: manufacturer spec pages
+  { id:"mavic3",  label:"DJI Mavic 3 (folded)",       category:"camera",      L:8.90,  W:3.60, H:3.50 },
+  { id:"air2s",   label:"DJI Air 2S (folded)",         category:"camera",      L:6.90,  W:3.50, H:3.50 },
+  { id:"mini3",   label:"DJI Mini 3 (folded)",         category:"camera",      L:5.80,  W:3.20, H:2.50 },
+  { id:"a7iii",   label:"Sony A7 III (body only)",     category:"camera",      L:5.00,  W:3.80, H:3.00 },
+  { id:"a7riii",  label:"Sony A7R III (body only)",    category:"camera",      L:5.00,  W:3.80, H:3.00 },
+  { id:"eosr5",   label:"Canon EOS R5 (body only)",    category:"camera",      L:5.70,  W:3.90, H:3.50 },
+  { id:"eosr6",   label:"Canon EOS R6 (body only)",    category:"camera",      L:5.40,  W:3.80, H:3.40 },
+  // LAPTOPS
+  { id:"mbp13",   label:"13\" MacBook Pro",            category:"laptop",      L:11.97, W:8.36, H:0.61 },
+  { id:"mbp15",   label:"15\" MacBook Pro",            category:"laptop",      L:13.75, W:9.48, H:0.66 },
+  { id:"mbp16",   label:"16\" MacBook Pro",            category:"laptop",      L:14.01, W:9.77, H:0.66 },
+  { id:"xps15",   label:"Dell XPS 15",                 category:"laptop",      L:13.60, W:9.10, H:0.73 },
+  { id:"xps13",   label:"Dell XPS 13",                 category:"laptop",      L:11.63, W:7.84, H:0.58 },
+  // ELECTRONICS
+  { id:"switch",  label:"Nintendo Switch",             category:"electronics", L:9.40,  W:4.00, H:0.55 },
+  { id:"ipadpro", label:"iPad Pro 12.9\"",             category:"electronics", L:11.04, W:8.46, H:0.25 },
+  { id:"ipadair", label:"iPad Air (10.9\")",           category:"electronics", L:9.74,  W:7.02, H:0.24 },
+  // TOOLS
+  { id:"flir",    label:"DeWalt FLIR Thermal",         category:"tools",       L:5.50,  W:2.50, H:4.50 },
+  // GENERAL (no category-specific sub-selector)
+  { id:"custom",  label:"(Custom dimensions)",         category:"general",     L:0, W:0, H:0 }
+];
+
+/* ================================================================
+   SECTION 4: BAGS CATALOG
+   ================================================================ */
+const BAGS = [
+  { label:"Lone Star 2-Pistol Bag",  handle:"lone-star-2-pistol-bag",   firearmOnly:true },
+  { label:"Kinetic 2-Pistol Bag",    handle:"kinetic-2-pistol-bag",      firearmOnly:true },
+  { label:"Lone Star Range Bag",     handle:"lone-star-range-bag",       firearmOnly:false },
+  { label:"Lone Star 36\" Rifle Bag",handle:"lone-star-36-rifle-bag",    firearmOnly:true },
+  { label:"GOBAG Duffle",            handle:"waxed-canvas-gobag-duffle", firearmOnly:false },
+  { label:"Lone Star Ammo Bag",      handle:"ammo-bag",                  firearmOnly:false },
+  { label:"Lone Star XL Ammo Bag",   handle:"lone-star-xl-ammo-bag",     firearmOnly:false }
+];
+
+/* ================================================================
+   SECTION 5: WIDGET STATE & ROW MANAGEMENT
+   Each row is independent: type-selector, autocomplete, manual dims.
+   ================================================================ */
+
+let itemRows = [];
+let rowCounter = 0;
+
+function buildSearchList(type) {
+  if (type === "Other Gear") return GEAR;
+  // ADDITION 2: Shotgun maps to "shotgun"; PART 5: SBR maps to "sbr"
+  const subType = type === "Semi-Auto Handgun" ? "semi"
+                : type === "Revolver"           ? "revolver"
+                : type === "Shotgun"            ? "shotgun"
+                : type === "SBR"                ? "sbr"
+                : "longgun";
+  return FIREARMS.filter(f => f.type === subType);
+}
+
+function getPlaceholder(type) {
+  if (type === "Other Gear") return "What are you protecting? (DJI Mavic 3, MacBook Pro, etc.)";
+  return "What are you packing? (Glock 19, AR-15, etc.)";
+}
+
+function createRow() {
+  const rowId = ++rowCounter;
+  const state = { id: rowId, type: "Semi-Auto Handgun", selectedItem: null, manualL: "", manualW: "", manualH: "" };
+  itemRows.push(state);
+
+  const row = document.createElement("div");
+  row.className = "item-row";
+  row.dataset.rowId = rowId;
+  row.innerHTML = `
+    <select class="type-sel">
+      <option>Semi-Auto Handgun</option>
+      <option>Revolver</option>
+      <option>Shotgun</option>
+      <option>Long Gun</option>
+      <option>SBR</option>
+      <option>Other Gear</option>
+    </select>
+    <div class="item-input-area">
+      <div class="autocomplete-wrap">
+        <input type="text" class="model-input" placeholder="What are you packing? (Glock 19, AR-15, etc.)">
+        <ul class="autocomplete-dropdown" role="listbox"></ul>
+      </div>
+      <!-- ADDITION 1: verified dimensions shown on selection (firearms only) -->
+      <div class="selected-dims"></div>
+      <div class="manual-dims">
+        <span class="dim-label">Don't see it? Drop in the dimensions.</span>
+        <input type="number" class="dim-l" placeholder="L" min="0" step="0.01">
+        <span class="dim-sep">x</span>
+        <input type="number" class="dim-w" placeholder="W" min="0" step="0.01">
+        <span class="dim-sep">x</span>
+        <input type="number" class="dim-h" placeholder="H" min="0" step="0.01">
+        <span class="dim-label" style="margin-left:2px">in</span>
+      </div>
+    </div>
+    <button class="remove-btn" title="Remove item" aria-label="Remove item">&#10005;</button>
+  `;
+
+  const sel     = row.querySelector(".type-sel");
+  const input   = row.querySelector(".model-input");
+  const dropdown= row.querySelector(".autocomplete-dropdown");
+  const dimL    = row.querySelector(".dim-l");
+  const dimW    = row.querySelector(".dim-w");
+  const dimH    = row.querySelector(".dim-h");
+  const removeBtn = row.querySelector(".remove-btn");
+  // ADDITION 1: reference to the dim-display element
+  const dimDisplay = row.querySelector(".selected-dims");
+
+  // Type change — refresh autocomplete list, update placeholder
+  sel.addEventListener("change", () => {
+    const s = itemRows.find(r => r.id === rowId);
+    s.type = sel.value;
+    s.selectedItem = null;
+    input.value = "";
+    input.placeholder = getPlaceholder(sel.value);
+    dropdown.innerHTML = "";
+    dropdown.classList.remove("open");
+    // ADDITION 1: hide dims on type change
+    dimDisplay.textContent = "";
+    dimDisplay.classList.remove("visible");
+  });
+
+  // Autocomplete
+  let activeIdx = -1;
+  input.addEventListener("input", () => {
+    const s = itemRows.find(r => r.id === rowId);
+    s.selectedItem = null;
+    // ADDITION 1: hide dims when selection is cleared
+    dimDisplay.textContent = "";
+    dimDisplay.classList.remove("visible");
+    const q = input.value.toLowerCase().trim();
+    dropdown.innerHTML = "";
+    activeIdx = -1;
+    if (!q) { dropdown.classList.remove("open"); return; }
+    const list = buildSearchList(sel.value);
+    const matches = list.filter(i => i.label.toLowerCase().includes(q)).slice(0, 12);
+    if (!matches.length) { dropdown.classList.remove("open"); return; }
+    matches.forEach((item, i) => {
+      const li = document.createElement("li");
+      li.textContent = item.label;
+      li.setAttribute("role", "option");
+      li.addEventListener("mousedown", e => { e.preventDefault(); selectItem(item, s, input, dropdown, dimDisplay); });
+      dropdown.appendChild(li);
+    });
+    dropdown.classList.add("open");
+  });
+
+  input.addEventListener("keydown", e => {
+    const lis = dropdown.querySelectorAll("li");
+    if (e.key === "ArrowDown") { e.preventDefault(); activeIdx = Math.min(activeIdx+1, lis.length-1); lis.forEach((l,i) => l.classList.toggle("active", i===activeIdx)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); lis.forEach((l,i) => l.classList.toggle("active", i===activeIdx)); }
+    else if (e.key === "Enter" && activeIdx >= 0) {
+      const s = itemRows.find(r => r.id === rowId);
+      const list = buildSearchList(sel.value);
+      const q = input.value.toLowerCase().trim();
+      const matches = list.filter(i => i.label.toLowerCase().includes(q));
+      if (matches[activeIdx]) selectItem(matches[activeIdx], s, input, dropdown, dimDisplay);
+    }
+    else if (e.key === "Escape") { dropdown.classList.remove("open"); }
+  });
+
+  input.addEventListener("blur", () => setTimeout(() => dropdown.classList.remove("open"), 150));
+
+  // Manual dims
+  [dimL, dimW, dimH].forEach((el, i) => {
+    el.addEventListener("input", () => {
+      const s = itemRows.find(r => r.id === rowId);
+      s.selectedItem = null; // clear autocomplete if user types manual
+      if (i===0) s.manualL = el.value;
+      if (i===1) s.manualW = el.value;
+      if (i===2) s.manualH = el.value;
+    });
+  });
+
+  removeBtn.addEventListener("click", () => {
+    itemRows = itemRows.filter(r => r.id !== rowId);
+    row.remove();
+    if (itemRows.length === 0) addRow();
+  });
+
+  return row;
+}
+
+function selectItem(item, stateObj, input, dropdown, dimDisplay) {
+  stateObj.selectedItem = item;
+  input.value = item.label;
+  dropdown.classList.remove("open");
+  dropdown.innerHTML = "";
+  // ADDITION 1: show verified dimensions for firearms; hide for Other Gear
+  // item.type exists on FIREARMS entries; category exists on GEAR entries
+  if (item.type && stateObj.type !== "Other Gear") {
+    dimDisplay.textContent = `L: ${item.L.toFixed(2)}" | W: ${item.W.toFixed(2)}" | H: ${item.H.toFixed(2)}"`;
+    dimDisplay.classList.add("visible");
+  } else {
+    dimDisplay.textContent = "";
+    dimDisplay.classList.remove("visible");
+  }
+}
+
+function addRow() {
+  const row = createRow();
+  document.getElementById("itemList").appendChild(row);
+}
+
+// Initialize with one row
+addRow();
+document.getElementById("addItemBtn").addEventListener("click", addRow);
+
+/* ================================================================
+   SECTION 6: COMPATIBILITY ENGINE
+   
+   PART 1 — Orientation-Aware Axis Mapping:
+   Handguns/Revolvers: upright storage
+     - OAL → case length (L axis)
+     - Width (slide/cylinder) → case width (W axis, per-gun, summed)
+     - Height → case depth (H axis)
+   Long Guns/Shotguns/SBR: side storage
+     - OAL → case length (L axis)
+     - Firearm height (H) → case width (W axis, summed for multi-gun)
+     - Receiver width (W) → case depth (H axis)
+   
+   PART 6 — Three-Tier Clearance Classification:
+   Comfortable: all axes ≥ 0.5" clearance (Pass 2) or ≥ 0.25" (Pass 1)
+   Snug: any axis 0.25"–0.49" (Pass 2) or < 0.25" but > 0 (Pass 1)
+   Does not fit: any axis ≤ 0 — excluded entirely
+   
+   Pre-check routing (before Pass 1):
+   - Revolver-only 1–3: check #310 first (Addition 4)
+   - SBR-only: check #2332 first (Part 5)
+   ================================================================ */
+
+const CLEARANCE_SLOT_COMFORTABLE = 0.25; // Pass 1 comfortable threshold
+const CLEARANCE_INTERIOR_COMFORTABLE = 0.50; // Pass 2 comfortable threshold
+const CLEARANCE_BUFFER  = 0.25; // inter-item buffer per additional item
+
+// PART 1: firearm types that use side-lying orientation
+const SIDE_LYING_TYPES = new Set(["longgun","shotgun","sbr"]);
+
+function isSideLying(rowState) {
+  // Returns true for long guns, shotguns, SBRs
+  if (rowState.selectedItem) return SIDE_LYING_TYPES.has(rowState.selectedItem.type);
+  // For manual-entry rows, infer from the type selector
+  return rowState.type === "Long Gun" || rowState.type === "Shotgun" || rowState.type === "SBR";
+}
+
+function getItemDimensions(rowState) {
+  // Returns [L, W, H] or null — raw manufacturer dims, orientation applied in matching
+  if (rowState.selectedItem) {
+    const it = rowState.selectedItem;
+    return [it.L, it.W, it.H];
+  }
+  const l = parseFloat(rowState.manualL);
+  const w = parseFloat(rowState.manualW);
+  const h = parseFloat(rowState.manualH);
+  if (!isNaN(l) && !isNaN(w) && !isNaN(h) && l>0 && w>0 && h>0) return [l, w, h];
+  return null;
+}
+
+// PART 6: classify clearance tier for a single axis delta
+function clearanceTier(delta) {
+  if (delta <= 0) return "nofit";       // excluded
+  if (delta < 0.25) return "verysnug";  // show with warning
+  if (delta < 0.50) return "snug";      // show with warning
+  return "comfortable";                  // show clean
+}
+
+// PART 6: worst tier across axes
+function worstTier(tiers) {
+  if (tiers.includes("nofit")) return "nofit";
+  if (tiers.includes("verysnug")) return "snug"; // verysnug and snug both show warning
+  if (tiers.includes("snug")) return "snug";
+  return "comfortable";
+}
+
+// PART 1 + PART 6: check one firearm against a pre-cut slot (Pass 1)
+// Returns tier string: "nofit" | "snug" | "comfortable"
+function slotFitTier(itemDims, slot, rowState) {
+  const [iL, iW, iH] = itemDims;
+  let axisDeltas;
+
+  if (slot.orientation === "side") {
+    // PART 1: side-lying long guns/shotguns/SBR
+    // OAL → slotL; firearm height (H) → slotW; receiver width (W) → slotD
+    axisDeltas = [slot.L - iL, slot.W - iH, slot.D - iW];
+  } else {
+    // Upright: OAL → slotL; firearm width (W) → slotW; height (H) → slotD
+    axisDeltas = [slot.L - iL, slot.W - iW, slot.D - iH];
+  }
+
+  // PART 6: tier each axis with the Pass 1 comfortable threshold (0.25")
+  const tiers = axisDeltas.map(d => {
+    if (d <= 0) return "nofit";
+    if (d < 0.25) return "verysnug";
+    return "comfortable";
+  });
+  return worstTier(tiers);
+}
+
+// PART 1 + PART 6: check items against case interior (Pass 2)
+// Returns tier string for the whole load
+function interiorFitTier(allRows, caseObj) {
+  const dims = allRows.map(r => getItemDimensions(r)).filter(Boolean);
+  if (!dims.length) return "nofit";
+  const [cL, cW, cH] = caseObj.interior;
+
+  // PART 1: separate side-lying and upright items
+  const sideDims  = allRows.filter(r => isSideLying(r)).map(r => getItemDimensions(r)).filter(Boolean);
+  const uprightDims = allRows.filter(r => !isSideLying(r)).map(r => getItemDimensions(r)).filter(Boolean);
+
+  let axisDeltas;
+
+  if (sideDims.length > 0 && uprightDims.length === 0) {
+    // All side-lying:
+    // Length axis: max OAL vs cL
+    // Width axis: sum of heights + buffers vs cW (side-by-side)
+    // Depth axis: max receiver width vs cH
+    const maxOAL = Math.max(...sideDims.map(d => d[0]));
+    const totalH = sideDims.reduce((s, d) => s + d[2], 0) + (sideDims.length - 1) * CLEARANCE_BUFFER;
+    const maxW   = Math.max(...sideDims.map(d => d[1]));
+    axisDeltas = [cL - maxOAL, cW - totalH, cH - maxW];
+
+  } else if (uprightDims.length > 0 && sideDims.length === 0) {
+    // All upright (handguns/revolvers):
+    // Length axis: max OAL vs cL
+    // Width axis: sum of widths + buffers vs cW
+    // Depth axis: max height vs cH
+    const maxOAL  = Math.max(...uprightDims.map(d => d[0]));
+    const totalW  = uprightDims.reduce((s, d) => s + d[1], 0) + (uprightDims.length - 1) * CLEARANCE_BUFFER;
+    const maxH    = Math.max(...uprightDims.map(d => d[2]));
+    axisDeltas = [cL - maxOAL, cW - totalW, cH - maxH];
+
+  } else {
+    // Mixed upright + side-lying (suppression should handle most cases, but fallback safe):
+    // Use worst-axis combined footprint
+    const maxOAL = Math.max(...dims.map(d => d[0]));
+    const totalW = dims.reduce((s, d) => s + d[1], 0) + (dims.length - 1) * CLEARANCE_BUFFER;
+    const maxH   = Math.max(...dims.map(d => d[2]));
+    axisDeltas = [cL - maxOAL, cW - totalW, cH - maxH];
+  }
+
+  // PART 6: tier each axis with the Pass 2 comfortable threshold (0.5")
+  const tiers = axisDeltas.map(d => {
+    if (d <= 0) return "nofit";
+    if (d < 0.25) return "verysnug";
+    if (d < 0.50) return "snug";
+    return "comfortable";
+  });
+  return worstTier(tiers);
+}
+
+function pass1Match(firearmRows) {
+  // Returns array of { caseId, allFit, snug }
+  const results = [];
+  CASES.forEach(c => {
+    if (!c.precutFoamAvailable || !c.precutSlots.length) return;
+    const slot = c.precutSlots[0];
+
+    // All firearms must fit
+    let worstOverall = "comfortable";
+    for (const row of firearmRows) {
+      const dims = getItemDimensions(row);
+      if (!dims) { worstOverall = "nofit"; break; }
+      const tier = slotFitTier(dims, slot, row);
+      if (tier === "nofit") { worstOverall = "nofit"; break; }
+      if (tier === "snug") worstOverall = "snug";
+    }
+    if (worstOverall !== "nofit") {
+      results.push({ caseId: c.id, allFit: true, snug: worstOverall === "snug" });
+    }
+  });
+  return results;
+}
+
+function pass2Match(allRows) {
+  // PART 2: #2191 gating — only surface for 3+ long-gun/rifle selections
+  const longGunRows = allRows.filter(r => {
+    const t = r.type || (r.selectedItem && r.selectedItem.type);
+    return t === "Long Gun" || t === "Shotgun" || t === "SBR" ||
+           (r.selectedItem && SIDE_LYING_TYPES.has(r.selectedItem.type));
+  });
+  const longGunCount = longGunRows.length;
+
+  const results = [];
+  CASES.forEach(c => {
+    if (!c.pluckableFoam && !c.precutFoamAvailable) return;
+
+    // PART 2: #2191 — only surface for 3 or 4 rifle/longgun selections
+    if (c.id === "2191" && c.storageConfig && c.storageConfig.multiRifleOnly) {
+      if (longGunCount < 3) return;
+    }
+
+    // PART 2: #229 — single rifle only; skip for multi-gun loads
+    if (c.id === "229" && c.storageConfig && c.storageConfig.capacity === 1) {
+      if (allRows.length > 1) return;
+    }
+
+    const tier = interiorFitTier(allRows, c);
+    if (tier !== "nofit") {
+      results.push({ caseId: c.id, snug: tier === "snug" });
+    }
+  });
+
+  // PART 6: sort by interior volume ascending (best fit first)
+  results.sort((a, b) => {
+    const volA = (() => { const [l,w,h] = CASES.find(c=>c.id===a.caseId).interior; return l*w*h; })();
+    const volB = (() => { const [l,w,h] = CASES.find(c=>c.id===b.caseId).interior; return l*w*h; })();
+    return volA - volB;
+  });
+  return results;
+}
+
+/* ================================================================
+   SECTION 7: SUPPRESSION RULES & RESULT RENDERING
+   ================================================================ */
+
+function runFinder() {
+  const resolvedRows = itemRows.filter(r => getItemDimensions(r) !== null);
+  if (!resolvedRows.length) {
+    alert("Add at least one item with a model selected or dimensions entered.");
+    return;
+  }
+
+  const firearmRows  = resolvedRows.filter(r => r.type !== "Other Gear");
+  const gearRows     = resolvedRows.filter(r => r.type === "Other Gear");
+  const hasFirearms  = firearmRows.length > 0;
+  const hasGear      = gearRows.length > 0;
+  const hasRevolvers = firearmRows.filter(r => r.type === "Revolver").length > 0;
+  const hasSemis     = firearmRows.filter(r => r.type === "Semi-Auto Handgun").length > 0;
+  const hasLongGuns  = firearmRows.filter(r => r.type === "Long Gun").length > 0;
+  // ADDITION 2: Shotguns are a firearm sub-type; follow same suppression rules as long guns
+  const hasShotguns  = firearmRows.filter(r => r.type === "Shotgun").length > 0;
+  // PART 5: SBR is a firearm sub-type
+  const hasSBRs      = firearmRows.filter(r => r.type === "SBR").length > 0;
+  const multiType    = (hasSemis && hasRevolvers) || (hasFirearms && hasGear) ||
+                       (hasSemis && hasLongGuns) || (hasRevolvers && hasLongGuns) ||
+                       (hasSemis && hasShotguns) || (hasRevolvers && hasShotguns) ||
+                       (hasLongGuns && hasShotguns) ||
+                       (hasSBRs && (hasSemis || hasRevolvers || hasLongGuns || hasShotguns));
+
+  /* --- SUPPRESSION LOGIC ---
+     Suppress pre-cut when:
+     1. Revolver + any other item (combo)
+     2. Any firearm + non-firearm gear
+     3. Non-firearm gear only (no dedicated firearm foam)
+     4. Multiple different firearm types mixed
+     ADDITION 2: Shotgun + revolver also suppresses pre-cut
+     PART 5: SBR + other type also suppresses pre-cut
+  */
+  const suppressPrecut = multiType || (!hasFirearms && hasGear) ||
+                         (hasRevolvers && (hasSemis || hasLongGuns || hasShotguns || hasSBRs));
+
+  // Pass 1 (with pre-checks)
+  let precutResults = [];
+
+  // ADDITION 4: #310 PRE-CHECK — revolvers only, 1–3 guns
+  let revolverPriorityResult = null;
+  const revolverRows = resolvedRows.filter(r => r.type === "Revolver");
+  const revolverOnlyList = resolvedRows.length > 0 && revolverRows.length === resolvedRows.length;
+  if (revolverOnlyList && revolverRows.length >= 1 && revolverRows.length <= 3) {
+    const case310 = CASES.find(c => c.id === "310");
+    const slot310 = case310 && case310.precutSlots[0];
+    if (slot310) {
+      let worst = "comfortable";
+      for (const row of revolverRows) {
+        const dims = getItemDimensions(row);
+        if (!dims) { worst = "nofit"; break; }
+        const tier = slotFitTier(dims, slot310, row);
+        if (tier === "nofit") { worst = "nofit"; break; }
+        if (tier === "snug") worst = "snug";
+      }
+      if (worst !== "nofit") {
+        revolverPriorityResult = { caseId:"310", allFit:true, snug: worst==="snug", priority310:true };
+      }
+    }
+  }
+
+  // PART 5: #2332 SBR PRE-CHECK — SBRs only
+  let sbrPriorityResult = null;
+  const sbrRows = resolvedRows.filter(r => r.type === "SBR");
+  const sbrOnlyList = resolvedRows.length > 0 && sbrRows.length === resolvedRows.length;
+  if (sbrOnlyList && sbrRows.length >= 1) {
+    const case2332 = CASES.find(c => c.id === "2332");
+    const slot2332 = case2332 && case2332.precutSlots[0];
+    if (slot2332) {
+      let worst = "comfortable";
+      for (const row of sbrRows) {
+        const dims = getItemDimensions(row);
+        if (!dims) { worst = "nofit"; break; }
+        const tier = slotFitTier(dims, slot2332, row);
+        if (tier === "nofit") { worst = "nofit"; break; }
+        if (tier === "snug") worst = "snug";
+      }
+      if (worst !== "nofit") {
+        sbrPriorityResult = { caseId:"2332", allFit:true, snug: worst==="snug",
+          priorityBadge:"Purpose-built for SBRs." };
+      }
+    }
+  }
+
+  if (!suppressPrecut && hasFirearms) {
+    precutResults = pass1Match(firearmRows);
+    // Prepend priority results, deduplicating
+    if (revolverPriorityResult) {
+      precutResults = precutResults.filter(r => r.caseId !== "310");
+      precutResults = [revolverPriorityResult, ...precutResults];
+    }
+    if (sbrPriorityResult) {
+      precutResults = precutResults.filter(r => r.caseId !== "2332");
+      precutResults = [sbrPriorityResult, ...precutResults];
+    }
+  } else if (!suppressPrecut && (revolverPriorityResult || sbrPriorityResult)) {
+    if (revolverPriorityResult) precutResults = [revolverPriorityResult];
+    if (sbrPriorityResult) precutResults = [sbrPriorityResult];
+  }
+
+  // Pass 2
+  const pluckableResults = pass2Match(resolvedRows);
+
+  // Render
+  renderResults(precutResults, pluckableResults, suppressPrecut, hasFirearms, hasGear, resolvedRows);
+}
+
+function renderResults(precutResults, pluckableResults, suppressPrecut, hasFirearms, hasGear, resolvedRows) {
+  const section = document.getElementById("resultsSection");
+  const inner   = document.getElementById("resultsInner");
+  const banner  = document.getElementById("suppressionBanner");
+
+  section.classList.add("visible");
+  inner.innerHTML = "";
+
+  // Suppression banner
+  if (suppressPrecut && hasFirearms) {
+    banner.textContent = "Pre-cut foam doesn't work for this combo. Pluckable foam fits everything — carve it to your exact kit.";
+    banner.classList.add("visible");
+  } else {
+    banner.classList.remove("visible");
+  }
+
+  // PRE-CUT SECTION (Pass 1)
+  if (!suppressPrecut && precutResults.length > 0) {
+    const label = document.createElement("div");
+    label.className = "results-group-label";
+    label.textContent = "Pre-Cut Foam — Ready to Load";
+    inner.appendChild(label);
+
+    const hasRevolverOnly = resolvedRows.every(r => r.type === "Revolver");
+    // Sort: priority items already prepended in runFinder; sort rest by volume
+    let sortedPrecut = [...precutResults];
+    const priorityCaseIds = new Set(sortedPrecut.filter(r => r.priority310 || r.priorityBadge).map(r => r.caseId));
+    const nonPriority = sortedPrecut.filter(r => !priorityCaseIds.has(r.caseId));
+    nonPriority.sort((a, b) => {
+      const volA = (() => { const [l,w,h] = CASES.find(c=>c.id===a.caseId).interior; return l*w*h; })();
+      const volB = (() => { const [l,w,h] = CASES.find(c=>c.id===b.caseId).interior; return l*w*h; })();
+      return volA - volB;
+    });
+    sortedPrecut = [...sortedPrecut.filter(r => priorityCaseIds.has(r.caseId)), ...nonPriority];
+
+    const grid = document.createElement("div");
+    grid.className = "case-cards";
+    sortedPrecut.filter(r => r.allFit !== false).forEach(result => {
+      const c = CASES.find(c => c.id === result.caseId);
+      if (!c) return;
+      const isTopPick = result.priority310 === true || !!result.priorityBadge || (hasRevolverOnly && c.id === "310");
+      const priorityBadgeText = result.priority310 ? "Purpose-built for revolvers."
+                               : result.priorityBadge ? result.priorityBadge
+                               : null;
+      grid.appendChild(buildCaseCard(c, "precut", isTopPick, result.snug || false, false, priorityBadgeText));
+    });
+    if (grid.children.length) inner.appendChild(grid);
+  }
+
+  // PLUCKABLE SECTION (Pass 2)
+  if (pluckableResults.length > 0) {
+    const label = document.createElement("div");
+    label.className = "results-group-label";
+    label.textContent = suppressPrecut ? "Pluckable Foam — Shape It to Your Kit" : "Custom Fit with Pluckable Foam";
+    inner.appendChild(label);
+
+    const grid = document.createElement("div");
+    grid.className = "case-cards";
+
+    // Surface #300 first for camera gear; #2191 badge for multi-rifle
+    const hasCameraGear = resolvedRows.some(r => r.selectedItem && r.selectedItem.category === "camera");
+    let sorted = [...pluckableResults];
+    if (hasCameraGear) {
+      sorted.sort((a, b) => (a.caseId === "300" ? -1 : b.caseId === "300" ? 1 : 0));
+    }
+
+    sorted.forEach(result => {
+      const c = CASES.find(c => c.id === result.caseId);
+      if (!c) return;
+      grid.appendChild(buildCaseCard(c, "pluckable", false, result.snug, hasCameraGear && c.id === "300"));
+    });
+    if (grid.children.length) inner.appendChild(grid);
+  }
+
+  // NO FIT
+  if (!precutResults.length && !pluckableResults.length) {
+    const nf = document.createElement("div");
+    nf.className = "no-fit-msg";
+    nf.textContent = "Nothing fits off the shelf. Go pluckable — carve it to your exact gear.";
+    inner.appendChild(nf);
+  }
+
+  // BAGS
+  renderBags(hasFirearms, hasGear);
+  // ACCESSORIES
+  renderAccessories(precutResults, pluckableResults, hasFirearms);
+
+  section.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function buildCaseCard(c, foamType, isTopPick, snug, cameraBadge, priorityBadgeText) {
+  const card = document.createElement("div");
+  card.className = "case-card" + (isTopPick ? " top-pick" : "");
+
+  // ADDITION 4 / PART 5: priorityBadgeText takes precedence
+  const badgeHTML = priorityBadgeText
+    ? `<div class="card-badge">${priorityBadgeText}</div>`
+    : isTopPick
+      ? `<div class="card-badge">Top Pick</div>`
+      : (cameraBadge ? `<div class="card-badge">Built for this.</div>` : "");
+
+  const foamTagHTML = foamType === "precut"
+    ? `<span class="tag tag-precut">Pre-Cut Foam</span>`
+    : `<span class="tag tag-pluck">Pluckable Foam</span>`;
+
+  const wheelTag = c.wheels ? `<span class="tag tag-wheel">Wheels</span>` : "";
+  const lidTag   = c.lidOrg ? `<span class="tag tag-lidorg">Lid Organizer</span>` : "";
+
+  // PART 6: three-tier warning — amber, not red; all clearance-above-zero cases shown
+  const warnHTML = snug
+    ? `<div class="card-warn">This may be a snug fit. Confirm your exact firearm dimensions closely before ordering.</div>`
+    : "";
+
+  const pluckLabelHTML = foamType === "pluckable"
+    ? `<div class="pluck-label">Custom fit with pluckable foam — shape it to your exact setup.</div>`
+    : "";
+
+  // PART 2: configuration label for long gun / shotgun cases
+  const configLabel = c.storageConfig ? c.storageConfig.configLabel : null;
+  const configHTML  = configLabel ? `<div class="card-config">${configLabel}</div>` : "";
+
+  const [L, W, H] = c.interior;
+  const url = `https://condition1.com/products/${c.handle}`;
+
+  card.innerHTML = `
+    ${badgeHTML}
+    <div class="card-inner">
+      <div class="card-case-num">Case #${c.id}</div>
+      <div class="card-name">${c.name}</div>
+      <div class="card-dims"><strong>Interior</strong><br>${L}" × ${W}" × ${H}"</div>
+      <div class="card-tags">${foamTagHTML}${wheelTag}${lidTag}</div>
+      ${configHTML}
+      ${warnHTML}
+      ${pluckLabelHTML}
+      <a class="shop-btn" href="${url}" target="_blank">Shop Now</a>
+    </div>
+  `;
+  return card;
+}
+
+function renderBags(hasFirearms, hasGear) {
+  const section = document.getElementById("bagsSection");
+  section.innerHTML = "";
+  const label = document.createElement("div");
+  label.className = "results-group-label";
+  label.textContent = "Soft Carry Options";
+  section.appendChild(label);
+  const grid = document.createElement("div");
+  grid.className = "bags-grid";
+  BAGS.forEach(b => {
+    if (b.firearmOnly && !hasFirearms) return;
+    const a = document.createElement("a");
+    a.className = "bag-pill";
+    a.href = `https://condition1.com/products/${b.handle}`;
+    a.target = "_blank";
+    a.textContent = b.label;
+    grid.appendChild(a);
+  });
+  section.appendChild(grid);
+}
+
+function renderAccessories(precutResults, pluckableResults, hasFirearms) {
+  const section = document.getElementById("accessoriesSection");
+  section.innerHTML = "";
+  const label = document.createElement("div");
+  label.className = "results-group-label";
+  label.textContent = "Accessories";
+  section.appendChild(label);
+  const grid = document.createElement("div");
+  grid.className = "acc-grid";
+
+  const allMatched = [...precutResults.map(r=>r.caseId), ...pluckableResults.map(r=>r.caseId)];
+  const hasLidOrgCase = allMatched.some(id => CASES.find(c => c.id === id && c.lidOrg));
+  const multiItem = itemRows.filter(r => getItemDimensions(r)).length > 1;
+
+  const accs = [];
+  if (hasLidOrgCase) accs.push({ label:"Lid Organizers", url:"https://condition1.com/collections/lid-organizers" });
+  if (multiItem) accs.push({ label:"Padded Dividers", url:"https://condition1.com/collections/padded-dividers" });
+  if (!precutResults.length || !pluckableResults.length) accs.push({ label:"Replacement Pluckable Foam", url:"https://condition1.com/collections/replacement-foam" });
+  accs.push({ label:"Combo Cable Locks", url:"https://condition1.com/products/condition-1-combo-locks-2pk" });
+  accs.push({ label:"Keyed Gun Cable Locks", url:"https://condition1.com/products/keyed-15-cable-gun-locks-3pk" });
+
+  accs.forEach(a => {
+    const pill = document.createElement("a");
+    pill.className = "acc-pill";
+    pill.href = a.url;
+    pill.target = "_blank";
+    pill.textContent = a.label;
+    grid.appendChild(pill);
+  });
+  section.appendChild(grid);
+}
+
+document.getElementById("findBtn").addEventListener("click", runFinder);
+</script>
+
+<!-- ================================================================
+     SECTION 8: HOW IT WORKS (plain English)
+     
+     DATA FLOW:
+     1. User builds item list. Each row is independent with its own
+        type-selector (Semi-Auto / Revolver / Long Gun / Other Gear),
+        model autocomplete, and manual L×W×H entry. Both autocomplete
+        and manual entry work simultaneously per row.
+     
+     2. On "Find My Case" click, getItemDimensions() resolves each
+        row to [L, W, H]. Selected autocomplete items use manufacturer-
+        verified dimensions from FIREARMS/GEAR databases. Manual entries
+        use user-typed values. Rows with no dimensions are skipped.
+     
+     PASS 1 — Pre-Cut Slot Match:
+     - Runs only for firearm rows (not Other Gear).
+     - For each case with precutFoamAvailable:true, checks whether
+       EVERY firearm's [L, W, H] fits within the case's precutSlots
+       dimensions with 0.25" clearance on all axes.
+     - REVOLVER RULE: revolver W dimension is cylinder width (not grip).
+       Cylinder widths are hard-coded per model in FIREARMS database.
+     - #310 priority: if input contains only revolvers and #310 passes
+       slot check, it is sorted to first position.
+     
+     PASS 2 — Pluckable Foam Match:
+     - Runs for all gear types.
+     - Multi-item footprint: combined width = sum of all item widths
+       + 0.25" buffer per additional item. Max length = longest item.
+       Max height = tallest item.
+     - Case must provide 0.5" clearance on all three axes vs footprint.
+     - Cases with depth clearance < 0.75" are flagged "marginal."
+     
+     FOAM SUPPRESSION (overrides Pass 1 results):
+     - Revolver + any other item: suppress pre-cut entirely.
+     - Firearm + non-firearm gear: suppress pre-cut.
+     - Non-firearm only: no firearm pre-cut surfaced.
+     - Suppression banner shown when pre-cut is suppressed.
+     
+     WHERE TO UPDATE DATA:
+     - Add/edit cases: CASES array at top of <script>.
+     - Add/edit firearms: FIREARMS array.
+     - Add/edit gear: GEAR array.
+     - All pre-cut slot dimensions: precutSlots[] within each case entry.
+     - Bags: BAGS array.
+     - Policies: widget-footer HTML.
+================================================================== -->
+
+</body>
+</html>
