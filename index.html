@@ -609,18 +609,35 @@ body {
    - Customer review calibration: #1229 reviewer confirmed 18"/16" barrel fits AR-10 pre-cut;
      20" barrel required manual foam modification — flagged in slot note.
      Source: customer review — #1229 product page
+   
+   FIX 3 CHANGELOG (this pass):
+   - eligibleFor arrays added to all cases per appropriateness ruleset
+   - Long gun/SBR/shotgun cases (#229, #1229, #818, #2106, #2191, #2332, #2300, #2348, #2312)
+     explicitly exclude "semi" and "revolver" from eligibleFor
+   - #818 includes "semi" and "revolver" because it is explicitly marketed for multi-gun
+     configurations including a handgun alongside long guns
+   - #310 set to revolver only
+   - Handgun cases (<30" interior length) set to semi/revolver
+   - #300, #839, #289, #024, #286, #287, #991, #253, #1258, #2152 include semi/revolver
+     because Condition 1 markets these as general/gear/pistol cases
+   FIX 1 CHANGELOG (this pass):
+   - #818 storageConfig updated with per-configuration handgunOrientation field
+     (handgun is side-lying in the 2-gun and 3-gun configurations per prompt spec)
    ================================================================ */
 const CASES = [
   {
     id:"312", name:"10\" Small Case #312", interior:[8.49,5.94,3.79],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
     handle:"10-small-case-312", precutSlots:[],
+    // FIX 3: pistol-sized case
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
     id:"667", name:"8\" Micro Case #667", interior:[6.55,3.90,1.80],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:false,
     handle:"8-micro-waterproof-hard-case-667", precutSlots:[],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -630,6 +647,7 @@ const CASES = [
     // Pre-cut: 1 pistol slot with barrel plugs (5"/6.5"/8.5" lengths); no optics
     // Source: condition1.com/products/11-small-storage-case-184-1-slot-2-mag-precut-foam
     precutSlots:[{ L:8.5, W:1.25, D:4.13, count:1, note:"No optics. Barrel plugs for 5/6.5/8.5in barrels." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -639,17 +657,22 @@ const CASES = [
     // Pre-cut: 2 compact pistol slots (sub-compact / micro size)
     // Source: condition1.com/collections/pre-cut-foam-cases listing
     precutSlots:[{ L:8.5, W:1.25, D:5.23, count:2, note:"Best for sub-compact / micro pistols." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
     id:"185", name:"11\" Deep Case #185", interior:[9.29,7.23,6.13],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"11-small-storage-case-185", precutSlots:[], storageConfig:null
+    handle:"11-small-storage-case-185", precutSlots:[],
+    eligibleFor:["semi","revolver"],
+    storageConfig:null
   },
   {
     id:"232", name:"13\" Small Case #232", interior:[11.85,7.03,4.44],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"nintendo-switch-gaming-waterproof-portability-carrying-accessories", precutSlots:[], storageConfig:null
+    handle:"nintendo-switch-gaming-waterproof-portability-carrying-accessories", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"162", name:"17\" 2 Pistol Case #162", interior:[15.75,10.75,3.95],
@@ -657,6 +680,7 @@ const CASES = [
     handle:"condition-1-carrying-cases",
     // Source: condition1.com/collections/waterproof-cases-w-pre-cut-foam-dealer
     precutSlots:[{ L:9.55, W:1.63, D:3.95, count:2, note:"2 pistol slots + mags." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -667,7 +691,9 @@ const CASES = [
     // Source: condition1.com/products/16-medium-storage-case-179-with-2-slot-8-mag-pre-cut-foam
     precutSlots:[
       { L:9.55, W:1.63, D:5.25, count:4, note:"2/3/4 slot variants available. No extended mags. Optics/WML/magwell OK." }
-    ], storageConfig:null
+    ],
+    eligibleFor:["semi","revolver"],
+    storageConfig:null
   },
   {
     id:"310", name:"16\" 3 Revolver Case #310", interior:[14.61,10.56,8.51],
@@ -675,12 +701,16 @@ const CASES = [
     handle:"16-3-revolver-case-310",
     // Source: condition1.com/products/16-3-revolver-case-310
     precutSlots:[{ L:12.55, W:1.90, D:6.00, count:3, note:"Dedicated revolver slots. Accessory pockets 5\"x1.51\"x6\"." }],
+    // FIX 3: revolver only per product page
+    eligibleFor:["revolver"],
     storageConfig:null
   },
   {
     id:"2162", name:"17\" Medium Case #2162", interior:[15.75,10.75,3.95],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"17-medium-carrying-case-2162", precutSlots:[], storageConfig:null
+    handle:"17-medium-carrying-case-2162", precutSlots:[],
+    eligibleFor:["semi","revolver"],
+    storageConfig:null
   },
   {
     id:"801", name:"18\" 5 Pistol Case #801", interior:[17.49,11.87,6.25],
@@ -688,6 +718,7 @@ const CASES = [
     handle:"18-medium-storage-case-801-with-5-slot-20-mag-pre-cut-foam",
     // Source: condition1.com/products/18-medium-storage-case-801-with-5-slot-20-mag-pre-cut-foam
     precutSlots:[{ L:9.75, W:1.25, D:4.00, count:5, note:"3/5 slot variants + 50 mag variant. Optics/WML/magwell OK. No extended mags." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -698,6 +729,7 @@ const CASES = [
     // Pre-cut slots are 5.50"L x 1.25"W x 9"D (pistols stored VERTICALLY, barrel down)
     // Source: condition1.com/products/18-medium-storage-case-997-with-7-slot-14-mag-pre-cut-foam
     precutSlots:[{ L:5.50, W:1.25, D:9.00, count:7, note:"Pistols stored vertically. 7 slots, 14 mags. No extended mags. Optics/WML OK." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -706,6 +738,7 @@ const CASES = [
     handle:"20-6-pistol-case-227",
     // Source: condition1.com/products/20-6-pistol-case-227
     precutSlots:[{ L:9.55, W:1.63, D:5.25, count:6, note:"6 slot variant. No extended mags. Optics/WML/magwell OK." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -714,6 +747,7 @@ const CASES = [
     handle:"22-large-case-288",
     // Source: condition1.com/collections/large-cases (also 3-pistol + range bag variant)
     precutSlots:[{ L:9.55, W:1.63, D:5.25, count:3, note:"3 pistol + range bag layout." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
@@ -724,6 +758,8 @@ const CASES = [
     // Source: condition1.com/products/22-4-pistol-case-300
     // 4-slot insert: 10.25"L x 1.25"W x 4"D; 7-slot insert: 8.5"L x 1.25"W x 4.25"D
     precutSlots:[{ L:10.25, W:1.25, D:4.00, count:7, note:"4-slot or 7-slot insert available. 10.25\" or 8.5\" slots. Optics/WML/magwell OK." }],
+    // marketed as pistol/camera case
+    eligibleFor:["semi","revolver","gear"],
     storageConfig:null
   },
   {
@@ -732,42 +768,57 @@ const CASES = [
     handle:"24-6-pistol-case-305",
     // Source: condition1.com/collections/pre-cut-foam-cases
     precutSlots:[{ L:10.25, W:1.25, D:4.00, count:6, note:"6 pistol slots." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
     id:"839", name:"22\" Large Case #839", interior:[21.91,16.96,7.43],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"large-carrying-case", precutSlots:[], storageConfig:null
+    handle:"large-carrying-case", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"289", name:"25\" Large Case #289", interior:[21.97,17.03,8.87],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"25-large-storage-case-289", precutSlots:[], storageConfig:null
+    handle:"25-large-storage-case-289", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"024", name:"25\" Large Case #024", interior:[22.12,17.12,12.70],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"024", precutSlots:[], storageConfig:null
+    handle:"024", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"286", name:"25\" Large Case #286", interior:[21.60,16.60,12.79],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"condition-1-hard-cases-101286", precutSlots:[], storageConfig:null
+    handle:"condition-1-hard-cases-101286", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"287", name:"25\" Rolling Case #287", interior:[21.92,16.96,9.13],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"25inch-287-rolling-hard-travel-case-trunk-camera", precutSlots:[], storageConfig:null
+    handle:"25inch-287-rolling-hard-travel-case-trunk-camera", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"991", name:"25\" Rolling Case #991", interior:[21.98,17.02,10.56],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"25-large-storage-case-991", precutSlots:[], storageConfig:null
+    handle:"25-large-storage-case-991", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"253", name:"20\" Large Case #253", interior:[18.94,14.51,7.50],
     wheels:false, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"condition-1-watertight-cases-253", precutSlots:[], storageConfig:null
+    handle:"condition-1-watertight-cases-253", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   {
     id:"1258", name:"31\" 18 Pistol Case #1258", interior:[28.40,17.32,10.61],
@@ -775,12 +826,15 @@ const CASES = [
     handle:"31-footlocker-waterproof-case-258",
     // Source: condition1.com/collections/pre-cut-foam-cases
     precutSlots:[{ L:9.55, W:1.63, D:5.25, count:18, note:"18 pistol slots." }],
+    eligibleFor:["semi","revolver"],
     storageConfig:null
   },
   {
     id:"2152", name:"33\" Large Case #2152", interior:[30.00,22.00,18.00],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
-    handle:"33-rolling-hard-case-2152", precutSlots:[], storageConfig:null
+    handle:"33-rolling-hard-case-2152", precutSlots:[],
+    eligibleFor:["semi","revolver","gear"],
+    storageConfig:null
   },
   // PART 5: #2332 — 40" SBR Case
   // INT: 36.52" x 14.52" x 6.2" — Source: condition1.com/products/40-sbr-case-2332
@@ -794,6 +848,8 @@ const CASES = [
     // SBR cutout 32"L; side-oriented: OAL→slotL, firearm height→slotW, receiver width→slotD
     precutSlots:[{ L:32.00, W:14.52, D:6.20, count:1, orientation:"side",
       note:"SBR max OAL 32\". Side-oriented storage. Optics/WML accommodated." }],
+    // FIX 3: SBR only
+    eligibleFor:["sbr"],
     storageConfig:{ orientation:"side", capacity:1, type:"sbr",
       configLabel:"1 SBR on its side" }
   },
@@ -803,6 +859,8 @@ const CASES = [
     id:"2348", name:"40\" Long Trunk #2348", interior:[36.72,14.72,12.37],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
     handle:"40-long-trunk-2348", precutSlots:[],
+    // FIX 3: long gun / SBR only
+    eligibleFor:["rifle","shotgun","sbr","gear"],
     storageConfig:{ orientation:"side", capacity:4, type:"rifle",
       configLabel:"Stored on its side — 36.72\" × 14.72\" × 12.37\"" }
   },
@@ -819,6 +877,8 @@ const CASES = [
     // AR-10 primary slot: OAL→slotL (38.72"), firearm height (w/optics)→slotW, receiver width→slotD
     precutSlots:[{ L:38.72, W:13.50, D:5.14, count:1, orientation:"side",
       note:"AR-10 max OAL 38.72\". AR-15 max OAL 34.8\". 20\" barrel AR-10 requires foam mod (customer review). Includes pistol slot." }],
+    // FIX 3: rifle/shotgun/SBR only
+    eligibleFor:["rifle","shotgun","sbr"],
     storageConfig:{ orientation:"side", capacity:1, type:"rifle",
       configLabel:"1 rifle on its side" }
   },
@@ -828,6 +888,8 @@ const CASES = [
     id:"229", name:"44\" Long Case #229", interior:[42.00,13.50,5.14],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
     handle:"44-waterproof-long-case-229", precutSlots:[],
+    // FIX 3: rifle/shotgun/SBR only
+    eligibleFor:["rifle","shotgun","sbr"],
     // PART 2: storageConfig — single rifle on its side; do not surface for multi-rifle selections
     storageConfig:{ orientation:"side", capacity:1, type:"rifle",
       configLabel:"1 rifle on its side" }
@@ -845,6 +907,8 @@ const CASES = [
     // Customer review calibration: B5 Systems wide stocks don't fit without trimming.
     precutSlots:[{ L:40.00, W:13.54, D:12.02, count:4, orientation:"side",
       note:"4 rifles side by side. Max OAL 40\". Wide aftermarket stocks may require foam trimming (customer review). Not recommended for offset WML." }],
+    // FIX 3: rifle only (this specific case; it has a 14-pistol variant but they are separate SKUs)
+    eligibleFor:["rifle","shotgun","sbr"],
     // PART 2: storageConfig — 4 rifles side by side; only surface for 3+ rifle selections
     storageConfig:{ orientation:"side", capacity:4, type:"rifle",
       multiRifleOnly:true,
@@ -852,6 +916,8 @@ const CASES = [
   },
   // PART 2: #818 — 55" 3-Gun Case, pre-cut for AR-15/shotgun/pistol combos
   // INT: 51.47" x 13.77" x 5.02" — Source: condition1.com/products/55-3-gun-case-818
+  // FIX 3: explicitly includes semi + revolver because C1 markets it for multi-gun incl. handgun
+  // FIX 1: handgunOrientation:"side" in 2-gun and 3-gun configs
   {
     id:"818", name:"55\" 3-Gun Case #818", interior:[51.47,13.77,5.02],
     wheels:true, lidOrg:false, precutFoamAvailable:true, pluckableFoam:true,
@@ -859,9 +925,14 @@ const CASES = [
     // PART 4: orientation:"side"; rifle max OAL 41.7", shotgun max 49"
     precutSlots:[{ L:48.21, W:13.77, D:5.02, count:2, orientation:"side",
       note:"AR-15/10 max OAL 41.7\". Shotgun max 49\". Includes pistol slot. Non-standard barrel attachments may require pluckable." }],
-    // PART 2: 3 configurations marketed on product page
+    eligibleFor:["rifle","shotgun","sbr","semi","revolver"],
+    // FIX 1: updated storageConfig with per-config handgunOrientation
     storageConfig:{ orientation:"side", capacity:3,
-      configurations:["1 shotgun","hunting rifle + pistol","AR-15 + shotgun + pistol"],
+      configurations:[
+        { label:"1 shotgun",                   items:["shotgun"],                   handgunOrientation:"upright" },
+        { label:"Hunting Rifle + Pistol",       items:["rifle","handgun"],           handgunOrientation:"side" },
+        { label:"AR-15 + Shotgun + Pistol",     items:["rifle","shotgun","handgun"], handgunOrientation:"side" }
+      ],
       configLabel:"Multi-gun: 1 shotgun | Hunting Rifle + Pistol | AR-15 + Shotgun + Pistol" }
   },
   // PART 2: #2106 — 55" 3 Shotgun Case, pre-cut for 3 shotguns side by side
@@ -873,6 +944,8 @@ const CASES = [
     // PART 4: orientation:"side"; shotgun slots 49.81"Lx1.85"Wx4.50"D side-oriented
     precutSlots:[{ L:49.81, W:1.85, D:4.50, count:3, orientation:"side",
       note:"3 shotgun slots side by side. Accessory pockets included." }],
+    // FIX 3: shotgun only
+    eligibleFor:["rifle","shotgun","sbr"],
     // PART 2: storageConfig — 3 shotguns side by side
     storageConfig:{ orientation:"side", capacity:3, type:"shotgun", precutAvailable:true,
       configLabel:"3 shotguns side by side — pre-cut foam" }
@@ -883,6 +956,7 @@ const CASES = [
     id:"2312", name:"55\" Long Trunk #2312", interior:[51.32,13.82,11.88],
     wheels:true, lidOrg:false, precutFoamAvailable:false, pluckableFoam:true,
     handle:"55-long-trunk-2312", precutSlots:[],
+    eligibleFor:["rifle","shotgun","sbr","gear"],
     storageConfig:{ orientation:"side", capacity:4, type:"rifle",
       configLabel:"Stored on its side — 51.32\" × 13.82\" × 11.88\"" }
   },
@@ -895,6 +969,8 @@ const CASES = [
     isEconomy:true, // not IP67; flagged
     precutSlots:[{ L:39.00, W:14.00, D:4.26, count:1, orientation:"side",
       note:"Economy case — not IP67 rated. Pre-cut for AR platform; standard convoluted foam." }],
+    // FIX 3: rifle/SBR only
+    eligibleFor:["rifle","sbr"],
     storageConfig:{ orientation:"side", capacity:1, type:"rifle",
       configLabel:"1 rifle on its side — economy case" }
   }
@@ -1397,11 +1473,79 @@ function interiorFitTier(allRows, caseObj) {
   return worstTier(tiers);
 }
 
+// FIX 1: Special #818 depth check for multi-gun configs that include a handgun.
+// In #818's 2-gun and 3-gun configurations, the handgun is on its side alongside
+// long guns. The depth (5.02") must fit: longGunReceiverWidth + handgunHeight + 0.25" buffer.
+// Returns tier string or null if this special path is not applicable.
+function check818HandgunSideLying(allRows, caseObj) {
+  if (caseObj.id !== "818") return null;
+  const longRows    = allRows.filter(r => isSideLying(r));
+  const handgunRows = allRows.filter(r => !isSideLying(r) && r.type !== "Other Gear");
+  if (handgunRows.length === 0 || longRows.length === 0) return null; // no mixed config
+
+  const [cL, cW, cH] = caseObj.interior; // 51.47 x 13.77 x 5.02
+  // Length: max OAL of long guns vs cL
+  const maxOAL = Math.max(...longRows.map(r => getItemDimensions(r)[0]));
+  // Width: sum of long gun heights (side-lying H axis) vs cW
+  const longTotalH = longRows.reduce((s, r) => s + getItemDimensions(r)[2], 0) + (longRows.length - 1) * CLEARANCE_BUFFER;
+  // Depth (FIX 1 — handgun side-lying exception):
+  //   sum of long gun receiver widths + handgun height (side-lying) + 0.25" buffer per additional item
+  const longReceiverW = Math.max(...longRows.map(r => getItemDimensions(r)[1]));
+  const handgunH      = Math.max(...handgunRows.map(r => getItemDimensions(r)[2])); // height on its side
+  const combinedDepth = longReceiverW + handgunH + CLEARANCE_BUFFER;
+
+  const axisDeltas = [cL - maxOAL, cW - longTotalH, cH - combinedDepth];
+  const tiers = axisDeltas.map(d => {
+    if (d <= 0) return "nofit";
+    if (d < 0.25) return "verysnug";
+    if (d < 0.50) return "snug";
+    return "comfortable";
+  });
+  return worstTier(tiers);
+}
+
+// FIX 3: derive the set of eligibility tokens from the current item list
+// Used to filter cases before both passes.
+function getLoadEligibilityTokens(allRows) {
+  const tokens = new Set();
+  allRows.forEach(r => {
+    if (r.type === "Other Gear") { tokens.add("gear"); return; }
+    if (r.selectedItem) {
+      const t = r.selectedItem.type;
+      if (t === "semi")     tokens.add("semi");
+      else if (t === "revolver") tokens.add("revolver");
+      else if (t === "shotgun")  tokens.add("shotgun");
+      else if (t === "sbr")      tokens.add("sbr");
+      else                       tokens.add("rifle");
+    } else {
+      // Manual entry — infer from type selector
+      if (r.type === "Semi-Auto Handgun") tokens.add("semi");
+      else if (r.type === "Revolver")  tokens.add("revolver");
+      else if (r.type === "Shotgun")   tokens.add("shotgun");
+      else if (r.type === "SBR")       tokens.add("sbr");
+      else if (r.type === "Long Gun")  tokens.add("rifle");
+    }
+  });
+  return tokens;
+}
+
+// FIX 3: true if the case is eligible for at least one token in the load
+function caseIsEligible(caseObj, loadTokens) {
+  if (!caseObj.eligibleFor || caseObj.eligibleFor.length === 0) return true; // no filter = open
+  return caseObj.eligibleFor.some(t => loadTokens.has(t));
+}
+
+const MAX_RESULTS = 6; // FIX 2: hard cap
+
 function pass1Match(firearmRows) {
-  // Returns array of { caseId, allFit, snug }
+  // Returns array of { caseId, allFit, snug } — max MAX_RESULTS entries
+  const loadTokens = getLoadEligibilityTokens(firearmRows); // FIX 3
   const results = [];
   CASES.forEach(c => {
     if (!c.precutFoamAvailable || !c.precutSlots.length) return;
+    // FIX 3: eligibility gate
+    if (!caseIsEligible(c, loadTokens)) return;
+
     const slot = c.precutSlots[0];
 
     // All firearms must fit
@@ -1417,10 +1561,18 @@ function pass1Match(firearmRows) {
       results.push({ caseId: c.id, allFit: true, snug: worstOverall === "snug" });
     }
   });
-  return results;
+  // FIX 2: sort by volume ascending, cap at 6
+  results.sort((a, b) => {
+    const volA = (() => { const [l,w,h] = CASES.find(c=>c.id===a.caseId).interior; return l*w*h; })();
+    const volB = (() => { const [l,w,h] = CASES.find(c=>c.id===b.caseId).interior; return l*w*h; })();
+    return volA - volB;
+  });
+  return results.slice(0, MAX_RESULTS);
 }
 
 function pass2Match(allRows) {
+  const loadTokens = getLoadEligibilityTokens(allRows); // FIX 3
+
   // PART 2: #2191 gating — only surface for 3+ long-gun/rifle selections
   const longGunRows = allRows.filter(r => {
     const t = r.type || (r.selectedItem && r.selectedItem.type);
@@ -1432,6 +1584,8 @@ function pass2Match(allRows) {
   const results = [];
   CASES.forEach(c => {
     if (!c.pluckableFoam && !c.precutFoamAvailable) return;
+    // FIX 3: eligibility gate
+    if (!caseIsEligible(c, loadTokens)) return;
 
     // PART 2: #2191 — only surface for 3 or 4 rifle/longgun selections
     if (c.id === "2191" && c.storageConfig && c.storageConfig.multiRifleOnly) {
@@ -1443,19 +1597,30 @@ function pass2Match(allRows) {
       if (allRows.length > 1) return;
     }
 
-    const tier = interiorFitTier(allRows, c);
+    // FIX 1: #818 with handgun gets its own special depth check
+    let tier;
+    const has818HandgunConfig = c.id === "818" &&
+      allRows.some(r => !isSideLying(r) && r.type !== "Other Gear") &&
+      allRows.some(r => isSideLying(r));
+    if (has818HandgunConfig) {
+      tier = check818HandgunSideLying(allRows, c);
+      if (!tier) tier = interiorFitTier(allRows, c); // fallback
+    } else {
+      tier = interiorFitTier(allRows, c);
+    }
+
     if (tier !== "nofit") {
       results.push({ caseId: c.id, snug: tier === "snug" });
     }
   });
 
-  // PART 6: sort by interior volume ascending (best fit first)
+  // PART 6 + FIX 2: sort by interior volume ascending, cap at 6
   results.sort((a, b) => {
     const volA = (() => { const [l,w,h] = CASES.find(c=>c.id===a.caseId).interior; return l*w*h; })();
     const volB = (() => { const [l,w,h] = CASES.find(c=>c.id===b.caseId).interior; return l*w*h; })();
     return volA - volB;
   });
-  return results;
+  return results.slice(0, MAX_RESULTS); // FIX 2: hard cap
 }
 
 /* ================================================================
